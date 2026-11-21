@@ -8,19 +8,30 @@ import {
   AlertCircle,
   Wrench,
   Search,
-  Filter
+  Filter,
+  UserCheck,
+  UserMinus
 } from 'lucide-react';
 import Card, { CardHeader } from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import Modal from '../../components/common/Modal';
+import Input from '../../components/common/Input';
 import { useData } from '../../context/DataContext';
 
 export function PGProperties() {
-  const { data, allocateBed } = useData();
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const { data, allocateBed, vacateBed, addRoom } = useData();
   const [allocateModalBed, setAllocateModalBed] = useState(null);
   const [selectedResidentId, setSelectedResidentId] = useState('');
+  const [addRoomModal, setAddRoomModal] = useState(false);
+  const [newRoom, setNewRoom] = useState({
+    propertyId: 'prop_01',
+    floor: '2nd Floor',
+    roomNumber: '',
+    type: 'DOUBLE_SHARING',
+    rent: 8500,
+    attachedBath: true
+  });
 
   const rooms = data.pgRooms;
   const beds = data.pgBeds;
@@ -31,7 +42,20 @@ export function PGProperties() {
       allocateBed(allocateModalBed.id, selectedResidentId, res?.name || 'Assigned Resident');
       setAllocateModalBed(null);
       setSelectedResidentId('');
+      alert('Bed allocated successfully! Resident record updated.');
     }
+  };
+
+  const handleCreateRoom = (e) => {
+    e.preventDefault();
+    if (!newRoom.roomNumber) return;
+    addRoom({
+      ...newRoom,
+      rent: parseFloat(newRoom.rent)
+    });
+    setNewRoom({ propertyId: 'prop_01', floor: '2nd Floor', roomNumber: '', type: 'DOUBLE_SHARING', rent: 8500, attachedBath: true });
+    setAddRoomModal(false);
+    alert('Room and corresponding beds added to inventory successfully!');
   };
 
   return (
@@ -48,9 +72,11 @@ export function PGProperties() {
           </p>
         </div>
 
-        <Button variant="pg" size="sm" icon={Plus}>
-          Add New Property
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="pg" size="sm" icon={Plus} onClick={() => setAddRoomModal(true)}>
+            Add Room to Property
+          </Button>
+        </div>
       </div>
 
       {/* Properties Overview */}
@@ -93,7 +119,7 @@ export function PGProperties() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-slate-900">Room & Bed Allocation Status</h2>
-          <span className="text-xs text-slate-500">Click any bed to allocate or vacate</span>
+          <span className="text-xs text-slate-500">Click Allocate or Vacate on any bed</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -138,9 +164,23 @@ export function PGProperties() {
 
                       <div className="flex items-center gap-2">
                         {bed.status === 'OCCUPIED' ? (
-                          <span className="text-[11px] font-medium text-slate-700 truncate max-w-[120px]">
-                            {bed.residentName}
-                          </span>
+                          <>
+                            <span className="text-[11px] font-medium text-slate-700 truncate max-w-[100px]">
+                              {bed.residentName}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Vacate bed ${bed.bedNumber}?`)) {
+                                  vacateBed(bed.id);
+                                }
+                              }}
+                              className="text-[10px] text-rose-600 hover:text-rose-800 font-semibold px-1 py-0.5"
+                              title="Vacate Bed"
+                            >
+                              Vacate
+                            </button>
+                          </>
                         ) : bed.status === 'MAINTENANCE' ? (
                           <span className="text-[10px] font-semibold text-amber-700 flex items-center gap-1">
                             <Wrench className="w-3 h-3" /> Repair
@@ -171,7 +211,7 @@ export function PGProperties() {
         </div>
       </div>
 
-      {/* BED ALLOCATION MODAL */}
+      {/* ALLOCATE BED MODAL */}
       <Modal
         isOpen={Boolean(allocateModalBed)}
         onClose={() => setAllocateModalBed(null)}
@@ -216,6 +256,75 @@ export function PGProperties() {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      {/* ADD ROOM MODAL */}
+      <Modal
+        isOpen={addRoomModal}
+        onClose={() => setAddRoomModal(false)}
+        title="Add Room to Property"
+        subtitle="Provision a room and auto-generate bed inventory"
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleCreateRoom} className="space-y-3.5 text-xs">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Property</label>
+            <select
+              value={newRoom.propertyId}
+              onChange={(e) => setNewRoom({ ...newRoom, propertyId: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            >
+              {data.pgProperties.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Room Number"
+              placeholder="e.g. 301"
+              value={newRoom.roomNumber}
+              onChange={(e) => setNewRoom({ ...newRoom, roomNumber: e.target.value })}
+              required
+            />
+            <Input
+              label="Floor Level"
+              placeholder="e.g. 3rd Floor"
+              value={newRoom.floor}
+              onChange={(e) => setNewRoom({ ...newRoom, floor: e.target.value })}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Sharing Type</label>
+              <select
+                value={newRoom.type}
+                onChange={(e) => setNewRoom({ ...newRoom, type: e.target.value })}
+                className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              >
+                <option value="DOUBLE_SHARING">Double Sharing (2 Beds)</option>
+                <option value="SINGLE">Single (1 Bed)</option>
+                <option value="TRIPLE_SHARING">Triple Sharing (3 Beds)</option>
+              </select>
+            </div>
+            <Input
+              label="Monthly Rent (₹/bed)"
+              type="number"
+              value={newRoom.rent}
+              onChange={(e) => setNewRoom({ ...newRoom, rent: e.target.value })}
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" size="sm" onClick={() => setAddRoomModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="pg" size="sm" type="submit">
+              Create Room & Beds
+            </Button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

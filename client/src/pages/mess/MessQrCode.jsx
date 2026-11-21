@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   QrCode,
   RefreshCw,
@@ -8,7 +9,7 @@ import {
   ExternalLink,
   UtensilsCrossed,
   Lock,
-  AlertTriangle
+  Smartphone
 } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -35,7 +36,7 @@ export function MessQrCode() {
       setTimeout(() => {
         regenerateQr('biz_mess_01');
         setIsRotating(false);
-      }, 500);
+      }, 400);
     }
   };
 
@@ -70,52 +71,42 @@ export function MessQrCode() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
-          <div className="bg-white rounded-2xl border-2 border-emerald-600/30 p-8 shadow-lg text-center flex flex-col items-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="bg-white rounded-2xl border-2 border-emerald-600/40 p-8 shadow-xl text-center flex flex-col items-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4">
               <UtensilsCrossed className="w-4 h-4" />
               Verified Mess Subscription Portal
             </div>
 
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {business.name}
             </h2>
             <p className="text-xs text-slate-500 max-w-sm mt-1">{business.address}</p>
 
-            <div className="my-8 p-6 bg-slate-950 rounded-2xl shadow-inner border border-slate-800 text-white flex flex-col items-center">
+            {/* REAL SCANNABLE QR CODE CONTAINER */}
+            <div className="my-8 p-6 bg-slate-950 rounded-3xl shadow-2xl border border-slate-800 text-white flex flex-col items-center">
               {business.qrIsActive ? (
                 <>
-                  <div className="w-56 h-56 bg-white rounded-xl p-3 shadow-md flex items-center justify-center">
-                    <svg viewBox="0 0 100 100" className="w-full h-full text-slate-900 fill-current">
-                      <rect x="0" y="0" width="30" height="30" fill="currentColor"/>
-                      <rect x="5" y="5" width="20" height="20" fill="white"/>
-                      <rect x="10" y="10" width="10" height="10" fill="currentColor"/>
-                      
-                      <rect x="70" y="0" width="30" height="30" fill="currentColor"/>
-                      <rect x="75" y="5" width="20" height="20" fill="white"/>
-                      <rect x="80" y="10" width="10" height="10" fill="currentColor"/>
-                      
-                      <rect x="0" y="70" width="30" height="30" fill="currentColor"/>
-                      <rect x="5" y="75" width="20" height="20" fill="white"/>
-                      <rect x="10" y="80" width="10" height="10" fill="currentColor"/>
-
-                      <rect x="40" y="10" width="15" height="10" fill="currentColor"/>
-                      <circle cx="50" cy="50" r="10" fill="currentColor"/>
-                      <circle cx="50" cy="50" r="4" fill="white"/>
-                      <rect x="15" y="40" width="10" height="15" fill="currentColor"/>
-                      <rect x="75" y="40" width="10" height="15" fill="currentColor"/>
-                      <rect x="40" y="75" width="15" height="10" fill="currentColor"/>
-                    </svg>
+                  <div className="bg-white p-4 rounded-2xl shadow-inner flex items-center justify-center">
+                    <QRCodeSVG
+                      value={registrationUrl}
+                      size={220}
+                      level="H"
+                      includeMargin={false}
+                    />
                   </div>
-                  <span className="text-[11px] font-mono text-emerald-400 mt-4 tracking-wider uppercase">
-                    Active Token: {business.activeQrToken}
+                  <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+                    <Smartphone className="w-4 h-4" />
+                    <span>Live & Scannable with any Phone Camera</span>
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-300 mt-2 tracking-wider">
+                    Token: {business.activeQrToken}
                   </span>
                   <span className="text-[10px] text-slate-400 mt-1">
-                    Generated on {new Date(business.qrCreatedAt).toLocaleDateString()}
+                    Issued: {new Date(business.qrCreatedAt).toLocaleDateString()}
                   </span>
                 </>
               ) : (
                 <div className="py-12 text-center text-rose-400">
-                  <AlertTriangle className="w-12 h-12 mx-auto mb-2 text-rose-500" />
                   <p className="font-bold text-sm">QR Code Revoked</p>
                 </div>
               )}
@@ -123,8 +114,8 @@ export function MessQrCode() {
 
             <div className="text-xs text-slate-600 max-w-sm space-y-1">
               <p className="font-bold text-slate-900">Scan to subscribe to dining plans:</p>
-              <p>1. Scan QR with your phone</p>
-              <p>2. Verify mobile via instant OTP</p>
+              <p>1. Scan QR with your phone camera</p>
+              <p>2. Verify mobile via instant OTP (Mock: 123456)</p>
               <p>3. Select meal plan & dietary preferences</p>
               <p className="text-[11px] text-emerald-700 font-semibold pt-1">
                 Pass activates instantly upon manager approval.

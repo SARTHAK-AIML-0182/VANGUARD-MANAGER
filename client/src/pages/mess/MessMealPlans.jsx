@@ -1,13 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollText, Plus, CheckCircle2, Users } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
+import Modal from '../../components/common/Modal';
+import Input from '../../components/common/Input';
 import { useData } from '../../context/DataContext';
 
 export function MessMealPlans() {
-  const { data } = useData();
+  const { data, addMealPlan } = useData();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [newPlan, setNewPlan] = useState({
+    name: '',
+    type: 'MONTHLY',
+    meals: 'Breakfast + Dinner',
+    price: 3600
+  });
+
   const plans = data.messMealPlans;
+
+  const handleCreate = (e) => {
+    e.preventDefault();
+    if (!newPlan.name) return;
+    addMealPlan({
+      ...newPlan,
+      price: parseFloat(newPlan.price)
+    });
+    setNewPlan({ name: '', type: 'MONTHLY', meals: 'Breakfast + Dinner', price: 3600 });
+    setModalOpen(false);
+    alert('New dining plan created!');
+  };
 
   return (
     <div className="space-y-6">
@@ -22,7 +44,7 @@ export function MessMealPlans() {
           </p>
         </div>
 
-        <Button variant="mess" size="sm" icon={Plus}>
+        <Button variant="mess" size="sm" icon={Plus} onClick={() => setModalOpen(true)}>
           Create New Meal Plan
         </Button>
       </div>
@@ -55,13 +77,71 @@ export function MessMealPlans() {
             </div>
 
             <div className="mt-5 pt-3 border-t border-slate-100 flex items-center gap-2">
-              <Button variant="secondary" size="sm" className="w-full justify-center text-xs">
-                Edit Details
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full justify-center text-xs"
+                onClick={() => alert(`Plan "${plan.name}" is currently active for ${plan.activeSubscribers} subscribers.`)}
+              >
+                Inspect Plan Metrics
               </Button>
             </div>
           </Card>
         ))}
       </div>
+
+      {/* CREATE PLAN MODAL */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Create Dining Package"
+        subtitle="Offer custom dining plans to students and working professionals"
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleCreate} className="space-y-3.5 text-xs">
+          <Input
+            label="Plan Title"
+            placeholder="e.g. Breakfast + Dinner Saver"
+            value={newPlan.name}
+            onChange={(e) => setNewPlan({ ...newPlan, name: e.target.value })}
+            required
+          />
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Billing Cycle</label>
+            <select
+              value={newPlan.type}
+              onChange={(e) => setNewPlan({ ...newPlan, type: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            >
+              <option value="MONTHLY">Monthly (30 Days)</option>
+              <option value="15_DAYS">15 Days</option>
+              <option value="FLEXI_PASS">Flexi Punch Pass</option>
+            </select>
+          </div>
+          <Input
+            label="Meal Inclusions"
+            placeholder="e.g. Breakfast + Dinner (Mon-Sun)"
+            value={newPlan.meals}
+            onChange={(e) => setNewPlan({ ...newPlan, meals: e.target.value })}
+            required
+          />
+          <Input
+            label="Price (₹)"
+            type="number"
+            value={newPlan.price}
+            onChange={(e) => setNewPlan({ ...newPlan, price: e.target.value })}
+            required
+          />
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" size="sm" onClick={() => setModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="mess" size="sm" type="submit">
+              Save Dining Plan
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

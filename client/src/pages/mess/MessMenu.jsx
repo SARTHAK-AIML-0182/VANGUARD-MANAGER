@@ -3,14 +3,35 @@ import { CalendarDays, UtensilsCrossed, Edit2, Check } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
+import Modal from '../../components/common/Modal';
 import { useData } from '../../context/DataContext';
 
 export function MessMenu() {
-  const { data } = useData();
+  const { data, updateMenuDay } = useData();
   const [activeDay, setActiveDay] = useState('Friday');
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const [editModal, setEditModal] = useState(false);
+  const [menuForm, setMenuForm] = useState({ breakfast: '', lunch: '', dinner: '' });
 
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const dayMenu = data.messMenu[activeDay] || data.messMenu.Friday;
+
+  const openEdit = () => {
+    setMenuForm({
+      breakfast: dayMenu.breakfast,
+      lunch: dayMenu.lunch,
+      dinner: dayMenu.dinner
+    });
+    setEditModal(true);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    updateMenuDay(activeDay, 'breakfast', menuForm.breakfast);
+    updateMenuDay(activeDay, 'lunch', menuForm.lunch);
+    updateMenuDay(activeDay, 'dinner', menuForm.dinner);
+    setEditModal(false);
+    alert(`${activeDay}'s menu updated successfully!`);
+  };
 
   return (
     <div className="space-y-6">
@@ -25,7 +46,7 @@ export function MessMenu() {
           </p>
         </div>
 
-        <Button variant="mess" size="sm" icon={Edit2}>
+        <Button variant="mess" size="sm" icon={Edit2} onClick={openEdit}>
           Edit {activeDay}'s Menu
         </Button>
       </div>
@@ -58,7 +79,7 @@ export function MessMenu() {
             {dayMenu.breakfast}
           </p>
           <div className="mt-6 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span>Special Tea & Coffee included</span>
+            <span>Tea & Coffee included</span>
           </div>
         </Card>
 
@@ -88,6 +109,56 @@ export function MessMenu() {
           </div>
         </Card>
       </div>
+
+      {/* EDIT MENU MODAL */}
+      <Modal
+        isOpen={editModal}
+        onClose={() => setEditModal(false)}
+        title={`Edit ${activeDay}'s Menu`}
+        subtitle="Changes are reflected in real time across customer subscriber hubs"
+        maxWidth="max-w-md"
+      >
+        <form onSubmit={handleSave} className="space-y-3.5 text-xs">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Breakfast Menu</label>
+            <textarea
+              rows={2}
+              value={menuForm.breakfast}
+              onChange={(e) => setMenuForm({ ...menuForm, breakfast: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Lunch Menu</label>
+            <textarea
+              rows={2}
+              value={menuForm.lunch}
+              onChange={(e) => setMenuForm({ ...menuForm, lunch: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Dinner Menu</label>
+            <textarea
+              rows={2}
+              value={menuForm.dinner}
+              onChange={(e) => setMenuForm({ ...menuForm, dinner: e.target.value })}
+              className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" size="sm" onClick={() => setEditModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="mess" size="sm" type="submit">
+              Save {activeDay} Menu
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
