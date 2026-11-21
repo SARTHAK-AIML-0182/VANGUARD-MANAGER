@@ -1,0 +1,27 @@
+{
+  "name": "vanguard-manager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vanguard Manager — Multi-Tenant SaaS Platform for PG & Mess Management",
+  "scripts": {
+    "install:all": "npm --prefix client install && npm --prefix server install",
+    "build:client": "npm --prefix client run build",
+    "build": "npm --prefix client run build",
+    "start:client": "npm --prefix client run dev",
+    "start:server": "npm --prefix server start",
+    "start": "npm --prefix server start",
+    "dev": "npm --prefix client run dev"
+  },
+  "keywords": [
+    "saas",
+    "pg-management",
+    "mess-management",
+    "qr-onboarding",
+    "multi-tenant",
+    "react",
+    "express",
+    "prisma"
+  ],
+  "author": "Vanguard Manager",
+  "license": "UNLICENSED"
+}
