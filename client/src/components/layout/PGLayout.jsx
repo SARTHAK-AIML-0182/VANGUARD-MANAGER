@@ -39,8 +39,11 @@ export function PGLayout() {
   const { currentUser, switchRole, logout } = useAuth();
   const { data } = useData();
 
+  const activeBusinessId = currentUser?.businessId || 'biz_pg_01';
+  const business = data.businesses[activeBusinessId] || data.businesses.biz_pg_01;
+
   const pendingCount = data.applications.filter(
-    a => a.businessId === 'biz_pg_01' && a.status === 'PENDING'
+    a => (a.businessId === activeBusinessId || a.businessId === 'biz_pg_01') && a.status === 'PENDING'
   ).length;
 
   const pgNavItems = [
@@ -81,7 +84,9 @@ export function PGLayout() {
           </button>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-            <span className="font-bold text-sm tracking-tight">PG Portal</span>
+            <span className="font-bold text-sm tracking-tight truncate max-w-[150px]">
+              {currentUser?.businessName || business?.name || 'PG Portal'}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -107,7 +112,9 @@ export function PGLayout() {
               <Building2 className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
-              <h2 className="text-sm font-bold text-white truncate tracking-tight">Royal Comfort PG</h2>
+              <h2 className="text-sm font-bold text-white truncate tracking-tight">
+                {currentUser?.businessName || business?.name || 'Royal Comfort PG'}
+              </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                 <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">PG Vertical</span>
@@ -199,7 +206,9 @@ export function PGLayout() {
               PG Management Console
             </span>
             <span className="text-slate-300">|</span>
-            <span className="text-xs text-slate-500 font-medium">Verified Property: Block A & Wing B (48 Beds)</span>
+            <span className="text-xs text-slate-500 font-medium truncate max-w-sm">
+              {currentUser?.businessName || business?.name}
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -216,10 +225,10 @@ export function PGLayout() {
 
             <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
               <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                RK
+                {currentUser?.avatar || 'PG'}
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-800 leading-tight">Rajesh Kumar</p>
+                <p className="text-xs font-bold text-slate-800 leading-tight">{currentUser?.name || 'PG Owner'}</p>
                 <p className="text-[10px] text-slate-400 font-medium">PG Owner (Primary Admin)</p>
               </div>
             </div>

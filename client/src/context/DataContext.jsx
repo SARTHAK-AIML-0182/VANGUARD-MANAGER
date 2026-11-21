@@ -36,6 +36,7 @@ export const INITIAL_DATA = {
   pgProperties: [
     {
       id: 'prop_01',
+      businessId: 'biz_pg_01',
       name: 'Royal Comfort - Boys Block A',
       code: 'RC-BLKA',
       address: 'Plot 42, Knowledge Park III, Greater Noida',
@@ -46,6 +47,7 @@ export const INITIAL_DATA = {
     },
     {
       id: 'prop_02',
+      businessId: 'biz_pg_01',
       name: 'Royal Comfort - Girls Wing B',
       code: 'RC-BLKB',
       address: 'Plot 44, Knowledge Park III, Greater Noida',
@@ -79,6 +81,7 @@ export const INITIAL_DATA = {
   pgResidents: [
     {
       id: 'res_01',
+      businessId: 'biz_pg_01',
       name: 'Aarav Sharma',
       phone: '+91 98111 22334',
       email: 'aarav.sharma@collegemail.edu',
@@ -94,6 +97,7 @@ export const INITIAL_DATA = {
     },
     {
       id: 'res_02',
+      businessId: 'biz_pg_01',
       name: 'Rohan Verma',
       phone: '+91 98333 44556',
       email: 'rohan.v@gmail.com',
@@ -109,6 +113,7 @@ export const INITIAL_DATA = {
     },
     {
       id: 'res_03',
+      businessId: 'biz_pg_01',
       name: 'Vikram Joshi',
       phone: '+91 98444 11229',
       email: 'vikram.j@gmail.com',
@@ -124,6 +129,7 @@ export const INITIAL_DATA = {
     },
     {
       id: 'res_04',
+      businessId: 'biz_pg_01',
       name: 'Kabir Mehta',
       phone: '+91 98777 44332',
       email: 'kabir.m@consulting.com',
@@ -142,7 +148,7 @@ export const INITIAL_DATA = {
   // 4. PENDING REGISTRATION APPLICATIONS
   applications: [
     {
-      id: 'app_pg_01',
+      id: 'APP-10021',
       businessId: 'biz_pg_01',
       type: 'PG_STUDENT',
       applicantName: 'Devansh Malhotra',
@@ -164,7 +170,7 @@ export const INITIAL_DATA = {
       rulesAcknowledged: true
     },
     {
-      id: 'app_pg_02',
+      id: 'APP-10022',
       businessId: 'biz_pg_01',
       type: 'PG_STUDENT',
       applicantName: 'Nitin Singhania',
@@ -186,7 +192,7 @@ export const INITIAL_DATA = {
       rulesAcknowledged: true
     },
     {
-      id: 'app_mess_01',
+      id: 'APP-20031',
       businessId: 'biz_mess_01',
       type: 'MESS_CUSTOMER',
       applicantName: 'Kunal Deshmukh',
@@ -205,55 +211,42 @@ export const INITIAL_DATA = {
 
   // 5. PG INVOICES & PAYMENTS
   pgInvoices: [
-    { id: 'INV-2026-081', residentId: 'res_01', residentName: 'Aarav Sharma', room: '101-A', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-03' },
-    { id: 'INV-2026-082', residentId: 'res_02', residentName: 'Rohan Verma', room: '102-A', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-04' },
-    { id: 'INV-2026-083', residentId: 'res_03', residentName: 'Vikram Joshi', room: '102-B', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-05' },
-    { id: 'INV-2026-084', residentId: 'res_04', residentName: 'Kabir Mehta', room: '103-A', month: 'November 2026', amount: 14000, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-02' },
-    { id: 'INV-2026-095', residentId: 'res_01', residentName: 'Aarav Sharma', room: '101-A', month: 'December 2026', amount: 8500, dueDate: '2026-12-05', status: 'UNPAID', paidDate: null },
-    { id: 'INV-2026-096', residentId: 'res_02', residentName: 'Rohan Verma', room: '102-A', month: 'December 2026', amount: 8500, dueDate: '2026-12-05', status: 'UNPAID', paidDate: null }
+    { id: 'INV-2026-081', businessId: 'biz_pg_01', residentId: 'res_01', residentName: 'Aarav Sharma', room: '101-A', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-03' },
+    { id: 'INV-2026-082', businessId: 'biz_pg_01', residentId: 'res_02', residentName: 'Rohan Verma', room: '102-A', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-04' },
+    { id: 'INV-2026-083', businessId: 'biz_pg_01', residentId: 'res_03', residentName: 'Vikram Joshi', room: '102-B', month: 'November 2026', amount: 8500, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-05' },
+    { id: 'INV-2026-084', businessId: 'biz_pg_01', residentId: 'res_04', residentName: 'Kabir Mehta', room: '103-A', month: 'November 2026', amount: 14000, dueDate: '2026-11-05', status: 'PAID', paidDate: '2026-11-02' },
+    { id: 'INV-2026-095', businessId: 'biz_pg_01', residentId: 'res_01', residentName: 'Aarav Sharma', room: '101-A', month: 'December 2026', amount: 8500, dueDate: '2026-12-05', status: 'UNPAID', paidDate: null },
+    { id: 'INV-2026-096', businessId: 'biz_pg_01', residentId: 'res_02', residentName: 'Rohan Verma', room: '102-A', month: 'December 2026', amount: 8500, dueDate: '2026-12-05', status: 'UNPAID', paidDate: null }
   ],
 
   // 6. PG COMPLAINTS
   pgComplaints: [
-    { id: 'CMP-101', residentName: 'Aarav Sharma', room: '101', category: 'PLUMBING', title: 'Bathroom tap slow dripping', status: 'IN_PROGRESS', priority: 'LOW', createdAt: '2026-11-20' },
-    { id: 'CMP-102', residentName: 'Rohan Verma', room: '102', category: 'WIFI', title: 'Wi-Fi disconnects intermittently on 2nd floor', status: 'OPEN', priority: 'HIGH', createdAt: '2026-11-21' },
-    { id: 'CMP-103', residentName: 'Kabir Mehta', room: '103', category: 'ELECTRICAL', title: 'Study lamp socket loose', status: 'RESOLVED', priority: 'MEDIUM', createdAt: '2026-11-18' }
+    { id: 'CMP-101', businessId: 'biz_pg_01', residentName: 'Aarav Sharma', room: '101', category: 'PLUMBING', title: 'Bathroom tap slow dripping', status: 'IN_PROGRESS', priority: 'LOW', createdAt: '2026-11-20' },
+    { id: 'CMP-102', businessId: 'biz_pg_01', residentName: 'Rohan Verma', room: '102', category: 'WIFI', title: 'Wi-Fi disconnects intermittently on 2nd floor', status: 'OPEN', priority: 'HIGH', createdAt: '2026-11-21' },
+    { id: 'CMP-103', businessId: 'biz_pg_01', residentName: 'Kabir Mehta', room: '103', category: 'ELECTRICAL', title: 'Study lamp socket loose', status: 'RESOLVED', priority: 'MEDIUM', createdAt: '2026-11-18' }
   ],
 
   // 7. PG LEAVE REQUESTS
   pgLeaveRequests: [
-    { id: 'LEV-01', residentName: 'Aarav Sharma', room: '101-A', fromDate: '2026-11-28', toDate: '2026-11-30', reason: 'Family wedding in Kanpur', status: 'APPROVED', parentContacted: true },
-    { id: 'LEV-02', residentName: 'Vikram Joshi', room: '102-B', fromDate: '2026-12-02', toDate: '2026-12-05', reason: 'Attending college symposium in Delhi', status: 'PENDING', parentContacted: false }
+    { id: 'LEV-01', businessId: 'biz_pg_01', residentName: 'Aarav Sharma', room: '101-A', fromDate: '2026-11-28', toDate: '2026-11-30', reason: 'Family wedding in Kanpur', status: 'APPROVED', parentContacted: true },
+    { id: 'LEV-02', businessId: 'biz_pg_01', residentName: 'Vikram Joshi', room: '102-B', fromDate: '2026-12-02', toDate: '2026-12-05', reason: 'Attending college symposium in Delhi', status: 'PENDING', parentContacted: false }
   ],
 
-  // 8. PG STAFF & EXPENSES
-  pgStaff: [
-    { id: 'stf_01', name: 'Ramesh Singh', role: 'Head Warden', phone: '+91 98111 88770', salary: 28000, property: 'Boys Block A' },
-    { id: 'stf_02', name: 'Sunita Sharma', role: 'Girls Warden', phone: '+91 98222 77661', salary: 28000, property: 'Girls Wing B' },
-    { id: 'stf_03', name: 'Balwant Yadav', role: 'Security & Night Supervisor', phone: '+91 98333 66552', salary: 18000, property: 'Campus Gate' }
-  ],
-
-  pgExpenses: [
-    { id: 'exp_01', title: 'Electricity Bill (Block A & B)', category: 'UTILITIES', amount: 48500, date: '2026-11-10', paidTo: 'UPPCL' },
-    { id: 'exp_02', title: 'Wi-Fi Commercial Fiber 1 Gbps', category: 'INTERNET', amount: 14000, date: '2026-11-05', paidTo: 'Airtel Enterprise' },
-    { id: 'exp_03', title: 'Water Tanker & Plumbing Supplies', category: 'MAINTENANCE', amount: 8200, date: '2026-11-14', paidTo: 'Shiv Hardware' }
-  ],
-
-  // 9. MESS MEAL PLANS
+  // 8. MESS MEAL PLANS
   messMealPlans: [
-    { id: 'mp_01', name: 'Standard Full Board', type: 'MONTHLY', meals: 'Breakfast + Lunch + Dinner', price: 4200, activeSubscribers: 84 },
-    { id: 'mp_02', name: 'Lunch & Dinner Only', type: 'MONTHLY', meals: 'Lunch + Dinner', price: 3400, activeSubscribers: 36 },
-    { id: 'mp_03', name: '15-Day Flexi Pass', type: 'FLEXI_15', meals: 'Any 30 Meals', price: 2100, activeSubscribers: 15 }
+    { id: 'mp_01', businessId: 'biz_mess_01', name: 'Standard Full Board', type: 'MONTHLY', meals: 'Breakfast + Lunch + Dinner', price: 4200, activeSubscribers: 84 },
+    { id: 'mp_02', businessId: 'biz_mess_01', name: 'Lunch & Dinner Only', type: 'MONTHLY', meals: 'Lunch + Dinner', price: 3400, activeSubscribers: 36 },
+    { id: 'mp_03', businessId: 'biz_mess_01', name: '15-Day Flexi Pass', type: 'FLEXI_15', meals: 'Any 30 Meals', price: 2100, activeSubscribers: 15 }
   ],
 
-  // 10. MESS CUSTOMERS
+  // 9. MESS CUSTOMERS
   messCustomers: [
-    { id: 'cust_01', name: 'Priya Iyer', phone: '+91 98222 33445', planName: 'Standard Full Board', dietary: 'VEG', status: 'ACTIVE', validUntil: '2026-12-15', mealsRemaining: 68, customerCode: 'AGM-P-402' },
-    { id: 'cust_02', name: 'Aditya Sen', phone: '+91 98666 77889', planName: 'Lunch & Dinner Only', dietary: 'NON_VEG', status: 'ACTIVE', validUntil: '2026-12-10', mealsRemaining: 34, customerCode: 'AGM-P-403' },
-    { id: 'cust_03', name: 'Megha Trivedi', phone: '+91 98444 88990', planName: '15-Day Flexi Pass', dietary: 'JAIN', status: 'ACTIVE', validUntil: '2026-12-05', mealsRemaining: 14, customerCode: 'AGM-P-404' }
+    { id: 'cust_01', businessId: 'biz_mess_01', name: 'Priya Iyer', phone: '+91 98222 33445', planName: 'Standard Full Board', dietary: 'VEG', status: 'ACTIVE', validUntil: '2026-12-15', mealsRemaining: 68, customerCode: 'AGM-P-402' },
+    { id: 'cust_02', businessId: 'biz_mess_01', name: 'Aditya Sen', phone: '+91 98666 77889', planName: 'Lunch & Dinner Only', dietary: 'NON_VEG', status: 'ACTIVE', validUntil: '2026-12-10', mealsRemaining: 34, customerCode: 'AGM-P-403' },
+    { id: 'cust_03', businessId: 'biz_mess_01', name: 'Megha Trivedi', phone: '+91 98444 88990', planName: '15-Day Flexi Pass', dietary: 'JAIN', status: 'ACTIVE', validUntil: '2026-12-05', mealsRemaining: 14, customerCode: 'AGM-P-404' }
   ],
 
-  // 11. MESS WEEKLY MENU
+  // 10. MESS WEEKLY MENU
   messMenu: {
     Monday: {
       breakfast: 'Poha with Sev, Boiled Eggs / Banana, Masala Tea',
@@ -292,34 +285,34 @@ export const INITIAL_DATA = {
     }
   },
 
-  // 12. MESS INVENTORY
+  // 11. MESS INVENTORY
   messInventory: [
-    { id: 'inv_01', item: 'Basmati Rice', category: 'GRAINS', currentQty: 180, unit: 'kg', reorderLevel: 50, status: 'SUFFICIENT' },
-    { id: 'inv_02', item: 'Atta (Whole Wheat Flour)', category: 'GRAINS', currentQty: 240, unit: 'kg', reorderLevel: 80, status: 'SUFFICIENT' },
-    { id: 'inv_03', item: 'Toor Dal', category: 'PULSES', currentQty: 45, unit: 'kg', reorderLevel: 40, status: 'LOW_STOCK' },
-    { id: 'inv_04', item: 'Cooking Oil (Mustard & Sunflower)', category: 'OILS', currentQty: 60, unit: 'Liters', reorderLevel: 30, status: 'SUFFICIENT' },
-    { id: 'inv_05', item: 'Fresh Paneer', category: 'DAIRY', currentQty: 8, unit: 'kg', reorderLevel: 10, status: 'LOW_STOCK' },
-    { id: 'inv_06', item: 'Potatoes & Onions', category: 'VEGETABLES', currentQty: 110, unit: 'kg', reorderLevel: 40, status: 'SUFFICIENT' }
+    { id: 'inv_01', businessId: 'biz_mess_01', item: 'Basmati Rice', category: 'GRAINS', currentQty: 180, unit: 'kg', reorderLevel: 50, status: 'SUFFICIENT' },
+    { id: 'inv_02', businessId: 'biz_mess_01', item: 'Atta (Whole Wheat Flour)', category: 'GRAINS', currentQty: 240, unit: 'kg', reorderLevel: 80, status: 'SUFFICIENT' },
+    { id: 'inv_03', businessId: 'biz_mess_01', item: 'Toor Dal', category: 'PULSES', currentQty: 45, unit: 'kg', reorderLevel: 40, status: 'LOW_STOCK' },
+    { id: 'inv_04', businessId: 'biz_mess_01', item: 'Cooking Oil (Mustard & Sunflower)', category: 'OILS', currentQty: 60, unit: 'Liters', reorderLevel: 30, status: 'SUFFICIENT' },
+    { id: 'inv_05', businessId: 'biz_mess_01', item: 'Fresh Paneer', category: 'DAIRY', currentQty: 8, unit: 'kg', reorderLevel: 10, status: 'LOW_STOCK' },
+    { id: 'inv_06', businessId: 'biz_mess_01', item: 'Potatoes & Onions', category: 'VEGETABLES', currentQty: 110, unit: 'kg', reorderLevel: 40, status: 'SUFFICIENT' }
   ],
 
-  // 13. MESS FOOD WASTAGE LOGS
+  // 12. MESS FOOD WASTAGE LOGS
   messWastage: [
-    { id: 'WST-2026-11-21', date: '2026-11-21', meal: 'Dinner', wastedKg: 3.8, reason: 'Weekend resident outings', auditedBy: 'Chef Naresh' },
-    { id: 'WST-2026-11-20', date: '2026-11-20', meal: 'Lunch', wastedKg: 1.9, reason: 'Optimal batch preparation', auditedBy: 'Chef Naresh' },
-    { id: 'WST-2026-11-19', date: '2026-11-19', meal: 'Dinner', wastedKg: 2.4, reason: 'Extra gravy prepared', auditedBy: 'Chef Naresh' }
+    { id: 'WST-2026-11-21', businessId: 'biz_mess_01', date: '2026-11-21', meal: 'Dinner', wastedKg: 3.8, reason: 'Weekend resident outings', auditedBy: 'Chef Naresh' },
+    { id: 'WST-2026-11-20', businessId: 'biz_mess_01', date: '2026-11-20', meal: 'Lunch', wastedKg: 1.9, reason: 'Optimal batch preparation', auditedBy: 'Chef Naresh' },
+    { id: 'WST-2026-11-19', businessId: 'biz_mess_01', date: '2026-11-19', meal: 'Dinner', wastedKg: 2.4, reason: 'Extra gravy prepared', auditedBy: 'Chef Naresh' }
   ],
 
-  // 14. MESS MEAL ATTENDANCE PUNCHES (for today)
+  // 13. MESS MEAL ATTENDANCE PUNCHES
   messAttendancePunches: [
-    { id: 'PCH-01', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'BREAKFAST', punchedAt: '08:15 AM' },
-    { id: 'PCH-02', customerId: 'cust_02', customerName: 'Aditya Sen', mealType: 'BREAKFAST', punchedAt: '08:45 AM' },
-    { id: 'PCH-03', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'LUNCH', punchedAt: '01:10 PM' }
+    { id: 'PCH-01', businessId: 'biz_mess_01', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'BREAKFAST', punchedAt: '08:15 AM' },
+    { id: 'PCH-02', businessId: 'biz_mess_01', customerId: 'cust_02', customerName: 'Aditya Sen', mealType: 'BREAKFAST', punchedAt: '08:45 AM' },
+    { id: 'PCH-03', businessId: 'biz_mess_01', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'LUNCH', punchedAt: '01:10 PM' }
   ]
 };
 
 export function DataProvider({ children }) {
   const [data, setData] = useState(() => {
-    const saved = localStorage.getItem('vanguard_data_store_v2');
+    const saved = localStorage.getItem('vanguard_data_store_live_v3');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -331,19 +324,83 @@ export function DataProvider({ children }) {
   });
 
   useEffect(() => {
-    localStorage.setItem('vanguard_data_store_v2', JSON.stringify(data));
+    localStorage.setItem('vanguard_data_store_live_v3', JSON.stringify(data));
   }, [data]);
 
   // RESET ALL DEMO DATA TO INITIAL
   const resetDemoData = () => {
     setData(INITIAL_DATA);
-    localStorage.setItem('vanguard_data_store_v2', JSON.stringify(INITIAL_DATA));
+    localStorage.setItem('vanguard_data_store_live_v3', JSON.stringify(INITIAL_DATA));
+  };
+
+  // DYNAMICALLY CREATE NEW BUSINESS (PG OR MESS)
+  const createBusiness = (newBusiness) => {
+    setData(prev => {
+      const updatedBusinesses = {
+        ...prev.businesses,
+        [newBusiness.id]: newBusiness
+      };
+
+      // If PG: create an initial property and room for them
+      if (newBusiness.type === 'PG') {
+        const propId = `prop_${Date.now()}`;
+        const newProperty = {
+          id: propId,
+          businessId: newBusiness.id,
+          name: `${newBusiness.name} - Main Building`,
+          code: 'MAIN-1',
+          address: newBusiness.address,
+          totalFloors: 3,
+          totalRooms: 6,
+          totalBeds: 12,
+          manager: 'Operations Desk'
+        };
+        const rmId1 = `rm_${Date.now()}_1`;
+        const rmId2 = `rm_${Date.now()}_2`;
+        const initialRooms = [
+          { id: rmId1, propertyId: propId, floor: '1st Floor', roomNumber: '101', type: 'DOUBLE_SHARING', rent: 8000, attachedBath: true },
+          { id: rmId2, propertyId: propId, floor: '1st Floor', roomNumber: '102', type: 'DOUBLE_SHARING', rent: 8000, attachedBath: true }
+        ];
+        const initialBeds = [
+          { id: `bed_${Date.now()}_1`, roomId: rmId1, bedNumber: '101-A', status: 'VACANT', residentName: null, residentId: null },
+          { id: `bed_${Date.now()}_2`, roomId: rmId1, bedNumber: '101-B', status: 'VACANT', residentName: null, residentId: null },
+          { id: `bed_${Date.now()}_3`, roomId: rmId2, bedNumber: '102-A', status: 'VACANT', residentName: null, residentId: null },
+          { id: `bed_${Date.now()}_4`, roomId: rmId2, bedNumber: '102-B', status: 'VACANT', residentName: null, residentId: null }
+        ];
+
+        return {
+          ...prev,
+          businesses: updatedBusinesses,
+          pgProperties: [newProperty, ...prev.pgProperties],
+          pgRooms: [...initialRooms, ...prev.pgRooms],
+          pgBeds: [...initialBeds, ...prev.pgBeds]
+        };
+      }
+
+      // If Mess: create initial starter meal plans
+      if (newBusiness.type === 'MESS') {
+        const starterPlans = [
+          { id: `mp_${Date.now()}_1`, businessId: newBusiness.id, name: 'Full Board (3 Meals)', type: 'MONTHLY', meals: 'Breakfast + Lunch + Dinner', price: 4000, activeSubscribers: 0 },
+          { id: `mp_${Date.now()}_2`, businessId: newBusiness.id, name: 'Lunch & Dinner Package', type: 'MONTHLY', meals: 'Lunch + Dinner', price: 3200, activeSubscribers: 0 }
+        ];
+        return {
+          ...prev,
+          businesses: updatedBusinesses,
+          messMealPlans: [...starterPlans, ...prev.messMealPlans]
+        };
+      }
+
+      return {
+        ...prev,
+        businesses: updatedBusinesses
+      };
+    });
   };
 
   // QR Revoke and Regenerate
   const regenerateQr = (businessId) => {
     const randomHex = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
-    const prefix = businessId.includes('pg') ? 'tk_pg_rc_' : 'tk_mess_ap_';
+    const prefix = businessId.includes('pg') ? 'tk_pg_' : 'tk_mess_';
     const newToken = `${prefix}${randomHex}`;
 
     setData(prev => {
@@ -365,7 +422,7 @@ export function DataProvider({ children }) {
     return newToken;
   };
 
-  // Review & Approval Workflow
+  // Applications & Approval
   const approveApplication = (applicationId, reviewNotes = '') => {
     setData(prev => {
       const app = prev.applications.find(a => a.id === applicationId);
@@ -379,14 +436,15 @@ export function DataProvider({ children }) {
       if (app.type === 'PG_STUDENT') {
         const newResident = {
           id: `res_${Date.now()}`,
+          businessId: app.businessId,
           name: app.applicantName,
           phone: app.phone,
           email: app.email,
           status: 'ACTIVE',
           roomNumber: 'Unassigned',
           bedNumber: 'Pending Allocation',
-          property: 'Royal Comfort - Boys Block A',
-          joiningDate: app.requestedJoiningDate,
+          property: 'Main Building',
+          joiningDate: app.requestedJoiningDate || new Date().toISOString().split('T')[0],
           monthlyRent: 8500,
           emergencyContact: `${app.emergencyContactName}: ${app.emergencyContactPhone}`,
           college: app.collegeOrCompany,
@@ -403,6 +461,7 @@ export function DataProvider({ children }) {
       if (app.type === 'MESS_CUSTOMER') {
         const newCustomer = {
           id: `cust_${Date.now()}`,
+          businessId: app.businessId,
           name: app.applicantName,
           phone: app.phone,
           planName: app.selectedPlan || 'Standard Full Board',
@@ -518,10 +577,11 @@ export function DataProvider({ children }) {
     }));
   };
 
-  const generateMonthlyInvoices = (monthName = 'December 2026') => {
+  const generateMonthlyInvoices = (monthName = 'December 2026', businessId = 'biz_pg_01') => {
     const occupied = data.pgBeds.filter(b => b.status === 'OCCUPIED');
-    const newInvoices = occupied.map((b, i) => ({
+    const newInvoices = occupied.map((b) => ({
       id: `INV-2026-${Math.floor(100 + Math.random() * 900)}`,
+      businessId,
       residentId: b.residentId,
       residentName: b.residentName,
       room: b.bedNumber,
@@ -659,6 +719,7 @@ export function DataProvider({ children }) {
     <DataContext.Provider
       value={{
         data,
+        createBusiness,
         resetDemoData,
         regenerateQr,
         approveApplication,

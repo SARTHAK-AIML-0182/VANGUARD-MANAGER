@@ -31,11 +31,14 @@ export function MessLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { switchRole } = useAuth();
+  const { currentUser, switchRole } = useAuth();
   const { data } = useData();
 
+  const activeBusinessId = currentUser?.businessId || 'biz_mess_01';
+  const business = data.businesses[activeBusinessId] || data.businesses.biz_mess_01;
+
   const pendingCount = data.applications.filter(
-    a => a.businessId === 'biz_mess_01' && a.status === 'PENDING'
+    a => (a.businessId === activeBusinessId || a.businessId === 'biz_mess_01') && a.status === 'PENDING'
   ).length;
 
   const messNavItems = [
@@ -74,7 +77,9 @@ export function MessLayout() {
           </button>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <span className="font-bold text-sm tracking-tight">Mess Portal</span>
+            <span className="font-bold text-sm tracking-tight truncate max-w-[150px]">
+              {currentUser?.businessName || business?.name || 'Mess Portal'}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -100,7 +105,9 @@ export function MessLayout() {
               <UtensilsCrossed className="w-5 h-5" />
             </div>
             <div className="overflow-hidden">
-              <h2 className="text-sm font-bold text-white truncate tracking-tight">Annapurna Gourmet</h2>
+              <h2 className="text-sm font-bold text-white truncate tracking-tight">
+                {currentUser?.businessName || business?.name || 'Annapurna Gourmet'}
+              </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Mess Vertical</span>
@@ -192,7 +199,9 @@ export function MessLayout() {
               Mess Management Console
             </span>
             <span className="text-slate-300">|</span>
-            <span className="text-xs text-slate-500 font-medium">Kitchen Live: Today's Menu Active (135 Subscribers)</span>
+            <span className="text-xs text-slate-500 font-medium truncate max-w-sm">
+              {currentUser?.businessName || business?.name}
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -209,10 +218,10 @@ export function MessLayout() {
 
             <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
               <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
-                SP
+                {currentUser?.avatar || 'MO'}
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-800 leading-tight">Suresh Patel</p>
+                <p className="text-xs font-bold text-slate-800 leading-tight">{currentUser?.name || 'Mess Owner'}</p>
                 <p className="text-[10px] text-slate-400 font-medium">Mess Owner & Caterer</p>
               </div>
             </div>

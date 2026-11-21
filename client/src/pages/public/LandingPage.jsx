@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Building2,
   UtensilsCrossed,
@@ -16,16 +17,100 @@ import {
   Sparkles,
   ChevronRight,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  UserCheck,
+  Plus
 } from 'lucide-react';
 import Card, { CardHeader } from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import Modal from '../../components/common/Modal';
+import Input from '../../components/common/Input';
+import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 
 export function LandingPage() {
-  const [activePortalModal, setActivePortalModal] = useState(null);
+  const navigate = useNavigate();
+  const { switchRole, registerPGOwner, registerMessOwner, login } = useAuth();
+  const { createBusiness, data } = useData();
+
+  // Modals state
+  const [activePortalModal, setActivePortalModal] = useState(null); // 'pg', 'mess', 'resident'
+  const [authMode, setAuthMode] = useState('REGISTER'); // 'REGISTER' | 'LOGIN'
   const [qrDemoOpen, setQrDemoOpen] = useState(false);
+
+  // PG Owner Registration Form
+  const [pgForm, setPgForm] = useState({
+    businessName: '',
+    ownerName: '',
+    phone: '',
+    email: '',
+    city: '',
+    address: '',
+    totalBeds: '24',
+    password: ''
+  });
+
+  // Mess Owner Registration Form
+  const [messForm, setMessForm] = useState({
+    businessName: '',
+    ownerName: '',
+    phone: '',
+    email: '',
+    city: '',
+    address: '',
+    password: ''
+  });
+
+  // Login Form
+  const [loginForm, setLoginForm] = useState({
+    identifier: '',
+    password: ''
+  });
+
+  // Student QR Code Entry
+  const [studentTokenInput, setStudentTokenInput] = useState('');
+
+  // Handle PG Owner Registration Submit
+  const handlePgRegister = (e) => {
+    e.preventDefault();
+    if (!pgForm.businessName || !pgForm.ownerName || !pgForm.phone) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    const result = registerPGOwner(pgForm, createBusiness);
+    setActivePortalModal(null);
+    alert(`Congratulations! Your PG "${result.business.name}" has been created. Opening your PG Management Portal...`);
+    navigate('/pg');
+  };
+
+  // Handle Mess Owner Registration Submit
+  const handleMessRegister = (e) => {
+    e.preventDefault();
+    if (!messForm.businessName || !messForm.ownerName || !messForm.phone) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    const result = registerMessOwner(messForm, createBusiness);
+    setActivePortalModal(null);
+    alert(`Congratulations! Your Mess "${result.business.name}" has been created. Opening your Mess Management Portal...`);
+    navigate('/mess');
+  };
+
+  // Handle Login
+  const handleLoginSubmit = (role, redirectPath) => (e) => {
+    e.preventDefault();
+    login(loginForm.identifier || 'admin@vanguard.com', loginForm.password, role);
+    setActivePortalModal(null);
+    navigate(redirectPath);
+  };
+
+  // Handle Student QR Start
+  const handleStudentQrGo = (e) => {
+    e.preventDefault();
+    const token = studentTokenInput || data.businesses.biz_pg_01.activeQrToken;
+    navigate(`/register?token=${token}`);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -45,7 +130,7 @@ export function LandingPage() {
             The Purpose-Built SaaS Platform for <span className="text-blue-600">PGs</span> & <span className="text-emerald-600">Messes</span>
           </h1>
 
-          {/* Subtitle with explicit distinction */}
+          {/* Subtitle */}
           <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto font-normal leading-relaxed">
             Digitise accommodation inventory, dining subscriptions, automated billing, and resident attendance with complete business separation and secure, QR-driven self-registration.
           </p>
@@ -65,7 +150,7 @@ export function LandingPage() {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="#portals">
               <Button size="xl" variant="primary" icon={ArrowRight} iconPosition="right">
-                Explore The 3 Portals
+                Enter Or Register Your Portal
               </Button>
             </a>
             <Button
@@ -78,7 +163,7 @@ export function LandingPage() {
             </Button>
           </div>
 
-          {/* Quick Metrics / Assurance Badges */}
+          {/* Quick Metrics */}
           <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
             <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-3.5">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Verticals</span>
@@ -109,7 +194,7 @@ export function LandingPage() {
               Three Independent Portals. One United Engine.
             </h2>
             <p className="mt-4 text-base text-slate-600">
-              Each portal serves a dedicated stakeholder group with tailored layouts, specialized workflows, and strict role-based data isolation.
+              Select your portal below to register your business, sign in, or explore via 1-click live demo accounts.
             </p>
           </div>
 
@@ -130,7 +215,7 @@ export function LandingPage() {
 
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">PG Management Portal</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                  For Paying Guest accommodations, student hostels, and co-living operators. Complete physical inventory and tenancy lifecycle tracking.
+                  For Paying Guest accommodations, student hostels, and co-living operators. Complete physical inventory, room allocations, and curfew attendance.
                 </p>
 
                 <div className="space-y-2.5 pb-6 border-b border-slate-100">
@@ -152,20 +237,30 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2">
+              <div className="pt-6 mt-2 space-y-2">
                 <Button
                   variant="pg"
                   size="md"
                   className="w-full justify-between"
                   icon={ArrowRight}
                   iconPosition="right"
-                  onClick={() => setActivePortalModal('pg')}
+                  onClick={() => {
+                    setAuthMode('REGISTER');
+                    setActivePortalModal('pg');
+                  }}
                 >
-                  Enter PG Portal View
+                  Register or Enter PG Portal
                 </Button>
-                <p className="text-[11px] text-center text-slate-400 mt-2 font-medium">
-                  21 Complete Operational Modules
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('PG_OWNER');
+                    navigate('/pg');
+                  }}
+                  className="w-full text-center text-xs font-semibold text-blue-600 hover:text-blue-800 py-1"
+                >
+                  ⚡ Or Open Demo as Rajesh Kumar (PG Owner)
+                </button>
               </div>
             </Card>
 
@@ -185,7 +280,7 @@ export function LandingPage() {
 
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">Mess Management Portal</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-6">
-                  For commercial dining messes, tiffin operators, and catering services. Structured subscription and kitchen inventory control.
+                  For commercial dining messes, tiffin operators, and catering services. Structured subscription, meal punch attendance, and kitchen inventory.
                 </p>
 
                 <div className="space-y-2.5 pb-6 border-b border-slate-100">
@@ -207,24 +302,34 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2">
+              <div className="pt-6 mt-2 space-y-2">
                 <Button
                   variant="mess"
                   size="md"
                   className="w-full justify-between"
                   icon={ArrowRight}
                   iconPosition="right"
-                  onClick={() => setActivePortalModal('mess')}
+                  onClick={() => {
+                    setAuthMode('REGISTER');
+                    setActivePortalModal('mess');
+                  }}
                 >
-                  Enter Mess Portal View
+                  Register or Enter Mess Portal
                 </Button>
-                <p className="text-[11px] text-center text-slate-400 mt-2 font-medium">
-                  19 Complete Operational Modules
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('MESS_OWNER');
+                    navigate('/mess');
+                  }}
+                  className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-800 py-1"
+                >
+                  ⚡ Or Open Demo as Suresh Patel (Mess Owner)
+                </button>
               </div>
             </Card>
 
-            {/* PORTAL CARD 3: STUDENT / CUSTOMER REGISTRATION & RESIDENT PORTAL */}
+            {/* PORTAL CARD 3: STUDENT / CUSTOMER PORTAL */}
             <Card
               borderAccent="resident"
               hoverEffect
@@ -262,27 +367,36 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2">
+              <div className="pt-6 mt-2 space-y-2">
                 <Button
                   variant="resident"
                   size="md"
                   className="w-full justify-between"
                   icon={ArrowRight}
                   iconPosition="right"
-                  onClick={() => setActivePortalModal('resident')}
+                  onClick={() => {
+                    setActivePortalModal('resident');
+                  }}
                 >
-                  Self-Registration & Resident
+                  Student / Customer Access
                 </Button>
-                <p className="text-[11px] text-center text-slate-400 mt-2 font-medium">
-                  QR-Driven Onboarding
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('RESIDENT_PG');
+                    navigate('/resident');
+                  }}
+                  className="w-full text-center text-xs font-semibold text-purple-600 hover:text-purple-800 py-1"
+                >
+                  ⚡ Or Open Demo as Aarav Sharma (Resident)
+                </button>
               </div>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* 3. HOW QR REGISTRATION WORKS (PROCESS EXPLAINER) */}
+      {/* 3. HOW QR REGISTRATION WORKS */}
       <section className="py-20 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -296,44 +410,29 @@ export function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-            {/* Step 1 */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 relative">
-              <div className="w-10 h-10 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-base mb-4">
-                1
-              </div>
+              <div className="w-10 h-10 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-base mb-4">1</div>
               <h4 className="font-bold text-slate-900 text-base mb-2">QR Code Generation</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
                 The PG or Mess owner generates their official registration QR code from their dashboard. An unguessable, 256-bit cryptographic token is created.
               </p>
             </div>
-
-            {/* Step 2 */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 relative">
-              <div className="w-10 h-10 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-base mb-4">
-                2
-              </div>
+              <div className="w-10 h-10 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-base mb-4">2</div>
               <h4 className="font-bold text-slate-900 text-base mb-2">Scan & Resolve</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Applicant scans the QR at the reception desk. The server resolves the verified business profile, identifying whether it is a PG or Mess.
               </p>
             </div>
-
-            {/* Step 3 */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 relative">
-              <div className="w-10 h-10 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-base mb-4">
-                3
-              </div>
+              <div className="w-10 h-10 rounded-lg bg-purple-600 text-white font-bold flex items-center justify-center text-base mb-4">3</div>
               <h4 className="font-bold text-slate-900 text-base mb-2">OTP & Form Submission</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Applicant completes mobile OTP verification and submits only necessary details. Application status is saved as <strong className="text-amber-700">PENDING</strong>.
               </p>
             </div>
-
-            {/* Step 4 */}
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 relative">
-              <div className="w-10 h-10 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-base mb-4">
-                4
-              </div>
+              <div className="w-10 h-10 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center text-base mb-4">4</div>
               <h4 className="font-bold text-slate-900 text-base mb-2">Manual Owner Approval</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
                 The owner reviews the application, allocates the bed or meal pass, and grants approval. Only then is the resident account activated.
@@ -343,123 +442,351 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 4. ARCHITECTURAL & OPERATIONAL DISTINCTIONS */}
-      <section id="architecture" className="py-20 bg-slate-50 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="neutral" size="md" className="mb-3">Architectural Philosophy</Badge>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
-              Engineered Differently From Typical Property Portals
-            </h2>
-            <p className="mt-4 text-base text-slate-600">
-              Why Vanguard Manager avoids marketplace clutter in favor of disciplined operational execution.
-            </p>
+      {/* 4. PG OWNER REGISTRATION & LOGIN MODAL */}
+      <Modal
+        isOpen={activePortalModal === 'pg'}
+        onClose={() => setActivePortalModal(null)}
+        title="PG Management Portal Gateway"
+        subtitle="Register your PG business or sign in to your dashboard"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4">
+          <div className="flex rounded-lg bg-slate-100 p-1 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setAuthMode('REGISTER')}
+              className={`flex-1 py-1.5 rounded-md transition-all ${
+                authMode === 'REGISTER' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Register New PG
+            </button>
+            <button
+              type="button"
+              onClick={() => setAuthMode('LOGIN')}
+              className={`flex-1 py-1.5 rounded-md transition-all ${
+                authMode === 'LOGIN' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Sign In
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* The Marketplace Way (What we reject) */}
-            <div className="bg-white rounded-xl border border-rose-200 p-8 shadow-sm">
-              <div className="flex items-center gap-3 mb-4 text-rose-700">
-                <XCircle className="w-6 h-6" />
-                <h3 className="text-lg font-bold">Typical Discovery Marketplace (NOT Us)</h3>
+          {authMode === 'REGISTER' ? (
+            <form onSubmit={handlePgRegister} className="space-y-3 text-xs">
+              <Input
+                label="PG Business / Hostel Name"
+                placeholder="e.g. Sunrise Luxury PG & Hostel"
+                value={pgForm.businessName}
+                onChange={(e) => setPgForm({ ...pgForm, businessName: e.target.value })}
+                required
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  label="Owner Full Name"
+                  placeholder="e.g. Ramesh Kumar"
+                  value={pgForm.ownerName}
+                  onChange={(e) => setPgForm({ ...pgForm, ownerName: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Contact Phone"
+                  type="tel"
+                  placeholder="e.g. 9876543210"
+                  value={pgForm.phone}
+                  onChange={(e) => setPgForm({ ...pgForm, phone: e.target.value })}
+                  required
+                />
               </div>
-              <ul className="space-y-3 text-sm text-slate-600">
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">✕</span>
-                  <span>Public listing search where strangers browse resident counts and pricing</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">✕</span>
-                  <span>Aggregated property booking that takes high commissions per student</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">✕</span>
-                  <span>Mess and PG features mixed together in confusing combined dashboards</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">✕</span>
-                  <span>Auto-activations that create unverified accounts without owner scrutiny</span>
-                </li>
-              </ul>
-            </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="owner@sunrisepg.com"
+                  value={pgForm.email}
+                  onChange={(e) => setPgForm({ ...pgForm, email: e.target.value })}
+                  required
+                />
+                <Input
+                  label="City"
+                  placeholder="e.g. Greater Noida"
+                  value={pgForm.city}
+                  onChange={(e) => setPgForm({ ...pgForm, city: e.target.value })}
+                  required
+                />
+              </div>
+              <Input
+                label="Street / Campus Address"
+                placeholder="e.g. Sector 62, Near Metro Station"
+                value={pgForm.address}
+                onChange={(e) => setPgForm({ ...pgForm, address: e.target.value })}
+                required
+              />
+              <Input
+                label="Initial Planned Capacity (Beds)"
+                type="number"
+                value={pgForm.totalBeds}
+                onChange={(e) => setPgForm({ ...pgForm, totalBeds: e.target.value })}
+                required
+              />
 
-            {/* The Vanguard Manager SaaS Way */}
-            <div className="bg-white rounded-xl border border-emerald-300 p-8 shadow-sm bg-gradient-to-b from-white to-emerald-50/20">
-              <div className="flex items-center gap-3 mb-4 text-emerald-800">
-                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                <h3 className="text-lg font-bold">Vanguard Manager SaaS Standard</h3>
+              <div className="pt-2">
+                <Button variant="pg" size="md" type="submit" className="w-full justify-center">
+                  Create PG Business & Open Console
+                </Button>
               </div>
-              <ul className="space-y-3 text-sm text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                  <span><strong>Private multi-tenancy</strong>: Each business manages only its own data</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                  <span><strong>QR onboarding</strong>: Registrations happen only after physical or direct contact</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                  <span><strong>Strict vertical isolation</strong>: PG features never appear in Mess consoles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold shrink-0">✓</span>
-                  <span><strong>Owner approval gate</strong>: Zero account access until owner review</span>
-                </li>
-              </ul>
+            </form>
+          ) : (
+            <form onSubmit={handleLoginSubmit('PG_OWNER', '/pg')} className="space-y-3 text-xs">
+              <Input
+                label="Email or Mobile Phone"
+                placeholder="rajesh@vanguardpg.com"
+                value={loginForm.identifier}
+                onChange={(e) => setLoginForm({ ...loginForm, identifier: e.target.value })}
+                required
+              />
+              <Input
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                required
+              />
+              <div className="pt-2">
+                <Button variant="pg" size="md" type="submit" className="w-full justify-center">
+                  Sign In to PG Dashboard
+                </Button>
+              </div>
+            </form>
+          )}
+
+          <div className="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                switchRole('PG_OWNER');
+                setActivePortalModal(null);
+                navigate('/pg');
+              }}
+              className="w-full p-2.5 rounded-lg bg-blue-50 text-blue-800 text-xs font-semibold hover:bg-blue-100 transition-colors text-center"
+            >
+              ⚡ Instant 1-Click Demo: Enter as Rajesh Kumar (48 Beds)
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 5. MESS OWNER REGISTRATION & LOGIN MODAL */}
+      <Modal
+        isOpen={activePortalModal === 'mess'}
+        onClose={() => setActivePortalModal(null)}
+        title="Mess Management Portal Gateway"
+        subtitle="Register your commercial mess or sign in to your dashboard"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4">
+          <div className="flex rounded-lg bg-slate-100 p-1 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setAuthMode('REGISTER')}
+              className={`flex-1 py-1.5 rounded-md transition-all ${
+                authMode === 'REGISTER' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Register New Mess
+            </button>
+            <button
+              type="button"
+              onClick={() => setAuthMode('LOGIN')}
+              className={`flex-1 py-1.5 rounded-md transition-all ${
+                authMode === 'LOGIN' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+              }`}
+            >
+              Sign In
+            </button>
+          </div>
+
+          {authMode === 'REGISTER' ? (
+            <form onSubmit={handleMessRegister} className="space-y-3 text-xs">
+              <Input
+                label="Mess / Dining Business Name"
+                placeholder="e.g. Shanti Food Services & Tiffin"
+                value={messForm.businessName}
+                onChange={(e) => setMessForm({ ...messForm, businessName: e.target.value })}
+                required
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  label="Owner / Caterer Name"
+                  placeholder="e.g. Suresh Patel"
+                  value={messForm.ownerName}
+                  onChange={(e) => setMessForm({ ...messForm, ownerName: e.target.value })}
+                  required
+                />
+                <Input
+                  label="Contact Phone"
+                  type="tel"
+                  placeholder="e.g. 9876588990"
+                  value={messForm.phone}
+                  onChange={(e) => setMessForm({ ...messForm, phone: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  label="Email Address"
+                  type="email"
+                  placeholder="info@shantifood.com"
+                  value={messForm.email}
+                  onChange={(e) => setMessForm({ ...messForm, email: e.target.value })}
+                  required
+                />
+                <Input
+                  label="City"
+                  placeholder="e.g. Greater Noida"
+                  value={messForm.city}
+                  onChange={(e) => setMessForm({ ...messForm, city: e.target.value })}
+                  required
+                />
+              </div>
+              <Input
+                label="Location / Campus Address"
+                placeholder="e.g. Shop 12, Student Center"
+                value={messForm.address}
+                onChange={(e) => setMessForm({ ...messForm, address: e.target.value })}
+                required
+              />
+
+              <div className="pt-2">
+                <Button variant="mess" size="md" type="submit" className="w-full justify-center">
+                  Create Mess Business & Open Console
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleLoginSubmit('MESS_OWNER', '/mess')} className="space-y-3 text-xs">
+              <Input
+                label="Email or Mobile Phone"
+                placeholder="suresh@annapurnamess.com"
+                value={loginForm.identifier}
+                onChange={(e) => setLoginForm({ ...loginForm, identifier: e.target.value })}
+                required
+              />
+              <Input
+                label="Password"
+                type="password"
+                placeholder="••••••••"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                required
+              />
+              <div className="pt-2">
+                <Button variant="mess" size="md" type="submit" className="w-full justify-center">
+                  Sign In to Mess Dashboard
+                </Button>
+              </div>
+            </form>
+          )}
+
+          <div className="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                switchRole('MESS_OWNER');
+                setActivePortalModal(null);
+                navigate('/mess');
+              }}
+              className="w-full p-2.5 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-semibold hover:bg-emerald-100 transition-colors text-center"
+            >
+              ⚡ Instant 1-Click Demo: Enter as Suresh Patel (135 Subscribers)
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* 6. STUDENT / CUSTOMER ACCESS MODAL */}
+      <Modal
+        isOpen={activePortalModal === 'resident'}
+        onClose={() => setActivePortalModal(null)}
+        title="Student & Customer Resident Gateway"
+        subtitle="Self-register with your PG/Mess or log in to your personal dashboard"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4 text-xs">
+          {/* Option A: Scan / Enter QR Token */}
+          <div className="p-4 rounded-xl border border-purple-200 bg-purple-50/50 space-y-3">
+            <div className="flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-purple-700" />
+              <span className="font-bold text-slate-900 text-sm">New Resident / Subscriber Registration</span>
+            </div>
+            <p className="text-slate-600 text-[11px] leading-relaxed">
+              If your PG or Mess gave you a registration QR code or code token, enter it below to start onboarding:
+            </p>
+            <form onSubmit={handleStudentQrGo} className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. tk_pg_rc_8923a4f89d021c7e"
+                value={studentTokenInput}
+                onChange={(e) => setStudentTokenInput(e.target.value)}
+                className="flex-1 text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:outline-none"
+              />
+              <Button variant="resident" size="sm" type="submit">
+                Start Registration
+              </Button>
+            </form>
+            <div className="flex items-center justify-between text-[10px] text-purple-700 font-semibold pt-1">
+              <button
+                type="button"
+                onClick={() => navigate(`/register?token=${data.businesses.biz_pg_01.activeQrToken}`)}
+                className="underline hover:text-purple-900"
+              >
+                Sample PG Form (Royal Comfort)
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(`/register?token=${data.businesses.biz_mess_01.activeQrToken}`)}
+                className="underline hover:text-purple-900"
+              >
+                Sample Mess Form (Annapurna)
+              </button>
+            </div>
+          </div>
+
+          {/* Option B: 1-Click Resident Access */}
+          <div className="space-y-2 pt-2">
+            <span className="font-bold text-slate-700 block">Existing Resident Sign In:</span>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  switchRole('RESIDENT_PG');
+                  setActivePortalModal(null);
+                  navigate('/resident');
+                }}
+                className="p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-left font-semibold"
+              >
+                <span className="block text-slate-900 text-xs">Aarav Sharma</span>
+                <span className="text-[10px] text-blue-600 font-normal">PG Resident (Room 101-A)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  switchRole('CUSTOMER_MESS');
+                  setActivePortalModal(null);
+                  navigate('/resident');
+                }}
+                className="p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-left font-semibold"
+              >
+                <span className="block text-slate-900 text-xs">Priya Iyer</span>
+                <span className="text-[10px] text-emerald-600 font-normal">Mess Subscriber (Full Board)</span>
+              </button>
             </div>
           </div>
         </div>
-      </section>
+      </Modal>
 
-      {/* 5. SECURITY & PRIVACY CONTROLS */}
-      <section id="security" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge variant="neutral" size="md" className="mb-3">Security by Design</Badge>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
-              Enterprise-Grade Security & Privacy Compliance
-            </h2>
-            <p className="mt-4 text-base text-slate-600">
-              Built on OWASP Top 10 guidelines and strict data minimization principles.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card padding="md" className="border-slate-200">
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-800 mb-4">
-                <Lock className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-base mb-2">No Full Aadhaar Collection</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                We strictly avoid demanding or storing plaintext 12-digit Aadhaar numbers. Verification accepts institutional IDs (College/Company ID) or masked documents with privacy notices.
-              </p>
-            </Card>
-
-            <Card padding="md" className="border-slate-200">
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-800 mb-4">
-                <Server className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-base mb-2">Server-Side Multi-Tenancy</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Tenant isolation is enforced in backend database queries via foreign key constraints, not simply by hiding buttons on the frontend. IDOR attacks are completely blocked.
-              </p>
-            </Card>
-
-            <Card padding="md" className="border-slate-200">
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-800 mb-4">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h4 className="font-bold text-slate-900 text-base mb-2">Cryptographic QR Tokens</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Registration QRs use 256-bit unguessable random tokens. No resident personal data is embedded in the QR image. Tokens can be revoked and regenerated instantly.
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. INTERACTIVE QR DEMO MODAL */}
+      {/* 7. INTERACTIVE QR DEMO EXPLAINER MODAL */}
       <Modal
         isOpen={qrDemoOpen}
         onClose={() => setQrDemoOpen(false)}
@@ -476,8 +803,8 @@ export function LandingPage() {
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 uppercase tracking-wider border border-blue-400/30">
                 Sample Business QR
               </span>
-              <h4 className="text-base font-bold text-white mt-1">Stanza Premier PG — Block A</h4>
-              <p className="text-xs text-slate-400 mt-0.5">Token: <code>tk_88f9...4b21</code> (Hashed & Rate-Limited)</p>
+              <h4 className="text-base font-bold text-white mt-1">Royal Comfort PG — Block A</h4>
+              <p className="text-xs text-slate-400 mt-0.5">Token: <code>tk_pg_rc_8923a4f89d021c7e</code></p>
             </div>
           </div>
 
@@ -501,54 +828,12 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-2 flex justify-end">
-            <Button variant="primary" size="md" onClick={() => setQrDemoOpen(false)}>
-              Got it
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* 7. PORTAL PREVIEW MODAL */}
-      <Modal
-        isOpen={Boolean(activePortalModal)}
-        onClose={() => setActivePortalModal(null)}
-        title={
-          activePortalModal === 'pg'
-            ? 'PG Management Portal Overview'
-            : activePortalModal === 'mess'
-            ? 'Mess Management Portal Overview'
-            : 'Student / Customer Portal Overview'
-        }
-        subtitle="Phase 1 Foundation Verification"
-        maxWidth="max-w-xl"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-600">
-            {activePortalModal === 'pg' &&
-              'The PG Management Portal gives PG and hostel owners complete command over physical property assets, bed occupancy, automated billing, and resident safety.'}
-            {activePortalModal === 'mess' &&
-              'The Mess Management Portal provides commercial dining and tiffin businesses with rigorous control over subscriptions, daily menus, pantry stock, and food wastage.'}
-            {activePortalModal === 'resident' &&
-              'The Resident Portal provides students and dining customers with a clean, privacy-conscious mobile-responsive hub to view stay details, menus, bills, and raise requests.'}
-          </p>
-
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Development Status</h5>
-            <div className="flex items-center gap-2 text-xs text-slate-700">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span><strong>Phase 1 & 2 Completed:</strong> Design system, layout, landing page, and architectural documentation.</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <span><strong>Next Step:</strong> Phase 3 Portal Layouts & Navigation Sidebars (Pending your review).</span>
-            </div>
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <Button variant="primary" size="md" onClick={() => setActivePortalModal(null)}>
-              Close Preview
-            </Button>
+          <div className="pt-2 flex justify-end gap-2">
+            <Link to={`/register?token=${data.businesses.biz_pg_01.activeQrToken}`}>
+              <Button variant="primary" size="md">
+                Test Live QR Registration
+              </Button>
+            </Link>
           </div>
         </div>
       </Modal>
