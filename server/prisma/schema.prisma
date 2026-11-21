@@ -1,0 +1,305 @@
+// Prisma Schema for Vanguard Manager
+// Multi-Tenant SaaS Engine for PG & Mess Management
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SystemRole {
+  PLATFORM_ADMIN
+  BUSINESS_USER
+}
+
+enum BusinessType {
+  PG
+  MESS
+}
+
+enum BusinessRole {
+  OWNER
+  STAFF
+  RESIDENT
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum BedStatus {
+  VACANT
+  OCCUPIED
+  MAINTENANCE
+  RESERVED
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  PARTIAL
+  OVERDUE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  ON_LEAVE
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  SNACKS
+  DINNER
+}
+
+// 1. SHARED CORE ENTITIES
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  phoneNumber  String     @unique
+  passwordHash String
+  fullName     String
+  systemRole   SystemRole @default(BUSINESS_USER)
+  status       String     @default("ACTIVE")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  memberships  BusinessMembership[]
+  auditLogs    AuditLog[]
+
+  @@index([email])
+  @@index([phoneNumber])
+}
+
+model Business {
+  id                 String       @id @default(uuid())
+  name               String
+  businessType       BusinessType
+  registrationNumber String?
+  contactPhone       String
+  contactEmail       String
+  addressLine        String
+  city               String
+  state              String
+  postalCode         String
+  isVerified         Boolean      @default(false)
+  status             String       @default("ACTIVE")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  memberships        BusinessMembership[]
+  registrationTokens RegistrationToken[]
+  applications       RegistrationApplication[]
+  auditLogs          AuditLog[]
+
+  // PG Relations
+  pgProperties       PGProperty[]
+  pgInvoices         PGInvoice[]
+
+  // Mess Relations
+  messMealPlans      MessMealPlan[]
+  messInventoryItems MessInventoryItem[]
+  messWastageLogs    MessWastageLog[]
+
+  @@index([businessType])
+}
+
+model BusinessMembership {
+  id         String       @id @default(uuid())
+  businessId String
+  userId     String
+  role       BusinessRole @default(OWNER)
+  createdAt  DateTime     @default(now())
+
+  business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@index([businessId])
+}
+
+model RegistrationToken {
+  id           String    @id @default(uuid())
+  businessId   String
+  tokenHash    String    @unique
+  purpose      String    @default("BUSINESS_REGISTRATION")
+  isActive     Boolean   @default(true)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([tokenHash])
+}
+
+model RegistrationApplication {
+  id              String            @id @default(uuid())
+  businessId      String
+  applicantName   String
+  applicantPhone  String
+  isPhoneVerified Boolean           @default(false)
+  applicationType String
+  formData        Json
+  status          ApplicationStatus @default(PENDING)
+  reviewNotes     String?
+  reviewedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  business        Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([applicantPhone])
+  @@index([status])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  businessId String
+  actorId    String
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  actor      User     @relation(fields: [actorId], references: [id])
+
+  @@index([businessId])
+  @@index([action])
+}
+
+// 2. PG MANAGEMENT ENTITIES
+model PGProperty {
+  id          String   @id @default(uuid())
+  businessId  String
+  name        String
+  code        String
+  address     String
+  totalFloors Int      @default(1)
+  createdAt   DateTime @default(now())
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  rooms       PGRoom[]
+
+  @@index([businessId])
+}
+
+model PGRoom {
+  id           String     @id @default(uuid())
+  propertyId   String
+  roomNumber   String
+  floorNumber  String
+  roomType     String
+  monthlyRent  Float
+  attachedBath Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+
+  property     PGProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  beds         PGBed[]
+
+  @@index([propertyId])
+}
+
+model PGBed {
+  id          String    @id @default(uuid())
+  roomId      String
+  bedNumber   String
+  status      BedStatus @default(VACANT)
+  createdAt   DateTime  @default(now())
+
+  room        PGRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+}
+
+model PGInvoice {
+  id            String        @id @default(uuid())
+  businessId    String
+  invoiceNumber String        @unique
+  residentName  String
+  residentPhone String
+  roomLabel     String
+  billingMonth  String
+  amount        Float
+  dueDate       DateTime
+  status        InvoiceStatus @default(UNPAID)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  business      Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([status])
+}
+
+// 3. MESS MANAGEMENT ENTITIES
+model MessMealPlan {
+  id          String   @id @default(uuid())
+  businessId  String
+  title       String
+  planType    String
+  included    String
+  price       Float
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model MessMealAttendance {
+  id             String   @id @default(uuid())
+  businessId     String
+  customerPhone  String
+  attendanceDate DateTime @default(now())
+  mealType       MealType
+  punchedAt      DateTime @default(now())
+
+  // Hard constraint preventing double punch for same meal
+  @@unique([businessId, customerPhone, attendanceDate, mealType])
+  @@index([businessId])
+}
+
+model MessInventoryItem {
+  id           String   @id @default(uuid())
+  businessId   String
+  itemName     String
+  category     String
+  currentQty   Float
+  unit         String
+  reorderLevel Float
+  createdAt    DateTime @default(now())
+
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model MessWastageLog {
+  id         String   @id @default(uuid())
+  businessId String
+  logDate    DateTime @default(now())
+  mealType   MealType
+  wastedKg   Float
+  reason     String?
+  auditedBy  String
+  createdAt  DateTime @default(now())
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
