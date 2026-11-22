@@ -17,13 +17,23 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 
 export function PGQrCode() {
   const { data, regenerateQr } = useData();
+  const { currentUser } = useAuth();
   const [copied, setCopied] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
-  const business = data.businesses.biz_pg_01;
+  const currentBizId = currentUser?.businessId || Object.keys(data.businesses)[0] || 'biz_pg_01';
+  const business = data.businesses[currentBizId] || {
+    id: currentBizId,
+    name: currentUser?.businessName || 'My PG & Hostel',
+    activeQrToken: 'tk_pg_default',
+    address: 'Campus Road',
+    phone: '+91 98765 00000',
+    qrCreatedAt: new Date().toISOString()
+  };
   const registrationUrl = `${window.location.origin}/register?token=${business.activeQrToken}`;
 
   const handleCopy = () => {
@@ -36,7 +46,7 @@ export function PGQrCode() {
     if (window.confirm('Are you sure you want to revoke and regenerate this QR Code? Any printed posters with the old QR will immediately stop accepting new registrations.')) {
       setIsRotating(true);
       setTimeout(() => {
-        regenerateQr('biz_pg_01');
+        regenerateQr(business.id);
         setIsRotating(false);
       }, 400);
     }

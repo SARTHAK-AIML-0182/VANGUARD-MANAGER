@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
-  ShieldCheck,
   Menu,
   X,
   ArrowRight,
   Building2,
   UtensilsCrossed,
-  QrCode,
   RotateCcw,
   Sparkles,
   UserCheck
@@ -21,7 +19,7 @@ export function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [demoLoginModal, setDemoLoginModal] = useState(false);
   const { switchRole } = useAuth();
-  const { resetDemoData } = useData();
+  const { mode, loadDemoData, startCleanLiveMode, resetDemoData } = useData();
   const navigate = useNavigate();
 
   const handleDemoLogin = (roleKey, redirectPath) => {
@@ -32,37 +30,56 @@ export function PublicNavbar() {
 
   const navLinks = [
     { label: 'Home', href: '/#home' },
-    { label: 'Portals', href: '/#portals' },
-    { label: 'Features', href: '/#features' },
-    { label: 'Architecture', href: '/#architecture' },
-    { label: 'Security & Privacy', href: '/#security' },
+    { label: 'PG Portal', href: '/pg' },
+    { label: 'Mess Portal', href: '/mess' },
+    { label: 'Resident Portal', href: '/resident' },
+    { label: 'Student QR Registration', href: '/register' },
   ];
 
   return (
     <>
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
-        {/* TOP DEMO ANNOUNCEMENT BAR */}
-        <div className="bg-slate-900 text-white text-xs py-1.5 px-4 text-center flex items-center justify-between">
-          <div className="flex items-center gap-2 mx-auto">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-medium text-slate-200">
-              Commercial SaaS Demo Mode: 4 Pre-seeded Personas Ready for Live Presentation
+        {/* TOP DEMO / LIVE MODE SWITCHER ANNOUNCEMENT BAR */}
+        <div className="bg-slate-900 text-white text-xs py-2 px-4 flex flex-wrap items-center justify-between gap-2 shadow-xs">
+          <div className="flex items-center gap-2 mx-auto sm:mx-0">
+            <span className={`w-2.5 h-2.5 rounded-full ${mode === 'LIVE' ? 'bg-sky-400' : 'bg-emerald-400'} animate-pulse`}></span>
+            <span className="font-semibold text-slate-100">
+              {mode === 'LIVE'
+                ? '🟢 LIVE MODE: Clean Slate (Zero Pre-saved Data — Everything configured live by owners & students)'
+                : '⚡ DEMO SHOWCASE: Realistic Pre-filled Data (Rooms, Menus, Invoices, Subscriptions)'}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm('Reset all demo state (rooms, registrations, payments, menus) to initial pristine data?')) {
-                resetDemoData();
-                alert('Demo database reset successfully!');
-              }
-            }}
-            className="hidden sm:flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700"
-            title="Reset sample database"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Reset Data
-          </button>
+          <div className="flex items-center gap-2 mx-auto sm:mx-0">
+            {mode === 'LIVE' ? (
+              <button
+                type="button"
+                onClick={() => {
+                  loadDemoData();
+                  alert('Demo Showcase Mode enabled with full pre-seeded data for presentation!');
+                }}
+                className="flex items-center gap-1.5 text-[11px] font-bold text-amber-300 hover:text-white px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors cursor-pointer"
+                title="Populate demo data"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                Load Demo Showcase Data
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Wipe pre-filled demo data and switch to Clean Live Mode with zero pre-saved data?')) {
+                    startCleanLiveMode();
+                    alert('Switched to Clean Live Mode! All mock data removed. You can now register your real PG/Mess.');
+                  }
+                }}
+                className="flex items-center gap-1.5 text-[11px] font-bold text-sky-300 hover:text-white px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors cursor-pointer"
+                title="Wipe to clean state"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-sky-400" />
+                Start Clean Live Mode (Zero Data)
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,13 +105,13 @@ export function PublicNavbar() {
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                  to={link.href}
+                  className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
 
@@ -134,14 +151,14 @@ export function PublicNavbar() {
           <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
             <nav className="flex flex-col space-y-2">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  to={link.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </nav>
             <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">

@@ -310,27 +310,80 @@ export const INITIAL_DATA = {
   ]
 };
 
+export const CLEAN_LIVE_DATA = {
+  businesses: {},
+  pgProperties: [],
+  pgRooms: [],
+  pgBeds: [],
+  pgResidents: [],
+  applications: [],
+  pgInvoices: [],
+  pgComplaints: [],
+  pgLeaveRequests: [],
+  messMealPlans: [],
+  messCustomers: [],
+  messMenu: {
+    Monday: { breakfast: 'Poha, Boiled Eggs / Banana, Tea', lunch: 'Rajma Masala, Steamed Rice, Roti, Salad', dinner: 'Mix Veg, Dal Tadka, Roti, Kheer', special: 'Kheer' },
+    Tuesday: { breakfast: 'Aloo Paratha, Curd, Pickle, Tea', lunch: 'Kadhi Pakora, Jeera Rice, Phulka', dinner: 'Paneer Butter Masala, Roti, Dal Fry', special: 'Paneer Butter Masala' },
+    Wednesday: { breakfast: 'Idli Sambar, Coconut Chutney, Coffee', lunch: 'Chole Bhature / Rice, Green Salad', dinner: 'Aloo Gobi, Yellow Dal, Roti, Gulab Jamun', special: 'Gulab Jamun' },
+    Thursday: { breakfast: 'Vegetable Upma, Boiled Chana, Tea', lunch: 'Dal Makhani, Jeera Rice, Tandoori Roti', dinner: 'Kofta Curry, Roti, Steamed Rice', special: 'Dal Makhani' },
+    Friday: { breakfast: 'Masala Dosa, Sambar, Chutney, Tea', lunch: 'Egg Curry / Paneer Do Pyaza, Rice, Roti', dinner: 'Veg Biryani, Boondi Raita, Roasted Papad', special: 'Veg Dum Biryani' },
+    Saturday: { breakfast: 'Puri Bhaji, Halwa, Masala Chai', lunch: 'Black Chana Curry, Steamed Rice, Roti', dinner: 'Mushroom Matar, Dal Tadka, Roti', special: 'Suji Halwa' },
+    Sunday: { breakfast: 'Bread Omelette / Veg Cutlet, Tea', lunch: 'Special Sunday Thali, Gulab Jamun', dinner: 'Light Khichdi / Roti Sabzi, Curd', special: 'Sunday Feast' }
+  },
+  messInventory: [],
+  messWastage: [],
+  messAttendancePunches: []
+};
+
 export function DataProvider({ children }) {
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem('vanguard_data_mode') || 'LIVE';
+  });
+
   const [data, setData] = useState(() => {
-    const saved = localStorage.getItem('vanguard_data_store_live_v3');
+    const savedMode = localStorage.getItem('vanguard_data_mode') || 'LIVE';
+    const storageKey = savedMode === 'DEMO' ? 'vanguard_demo_data_store' : 'vanguard_live_data_store';
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        return INITIAL_DATA;
+        return savedMode === 'DEMO' ? INITIAL_DATA : CLEAN_LIVE_DATA;
       }
     }
-    return INITIAL_DATA;
+    return savedMode === 'DEMO' ? INITIAL_DATA : CLEAN_LIVE_DATA;
   });
 
   useEffect(() => {
-    localStorage.setItem('vanguard_data_store_live_v3', JSON.stringify(data));
-  }, [data]);
+    const storageKey = mode === 'DEMO' ? 'vanguard_demo_data_store' : 'vanguard_live_data_store';
+    localStorage.setItem(storageKey, JSON.stringify(data));
+    localStorage.setItem('vanguard_data_mode', mode);
+  }, [data, mode]);
 
-  // RESET ALL DEMO DATA TO INITIAL
-  const resetDemoData = () => {
+  // SWITCH TO DEMO MODE (LOAD REALISTIC PRE-FILLED DATA)
+  const loadDemoData = () => {
+    setMode('DEMO');
     setData(INITIAL_DATA);
-    localStorage.setItem('vanguard_data_store_live_v3', JSON.stringify(INITIAL_DATA));
+    localStorage.setItem('vanguard_data_mode', 'DEMO');
+    localStorage.setItem('vanguard_demo_data_store', JSON.stringify(INITIAL_DATA));
+  };
+
+  // SWITCH TO LIVE MODE (CLEAN SLATE WITH NO PRE-SAVED DATA)
+  const startCleanLiveMode = () => {
+    setMode('LIVE');
+    setData(CLEAN_LIVE_DATA);
+    localStorage.setItem('vanguard_data_mode', 'LIVE');
+    localStorage.setItem('vanguard_live_data_store', JSON.stringify(CLEAN_LIVE_DATA));
+  };
+
+  // RESET CURRENT DATA
+  const resetDemoData = () => {
+    if (mode === 'DEMO') {
+      setData(INITIAL_DATA);
+    } else {
+      setData(CLEAN_LIVE_DATA);
+    }
   };
 
   // DYNAMICALLY CREATE NEW BUSINESS (PG OR MESS)
@@ -341,7 +394,16 @@ export function DataProvider({ children }) {
         [newBusiness.id]: newBusiness
       };
 
-      // If PG: create an initial property and room for them
+      // In pure LIVE mode, start 100% clean with zero pre-saved properties/rooms/plans
+      // The PG/Mess owner sets up their properties, rooms, beds, and plans themselves via the interactive UI!
+      if (mode === 'LIVE') {
+        return {
+          ...prev,
+          businesses: updatedBusinesses
+        };
+      }
+
+      // If PG in DEMO: create starter property and room
       if (newBusiness.type === 'PG') {
         const propId = `prop_${Date.now()}`;
         const newProperty = {
@@ -719,6 +781,10 @@ export function DataProvider({ children }) {
     <DataContext.Provider
       value={{
         data,
+        mode,
+        setMode,
+        loadDemoData,
+        startCleanLiveMode,
         createBusiness,
         resetDemoData,
         regenerateQr,

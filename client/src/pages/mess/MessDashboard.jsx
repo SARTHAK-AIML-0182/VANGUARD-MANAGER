@@ -29,6 +29,7 @@ import Badge from '../../components/common/Badge';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 
 const mealTrendsData = [
   { day: 'Mon', breakfast: 112, lunch: 128, dinner: 125, wasteKg: 2.1 },
@@ -42,16 +43,28 @@ const mealTrendsData = [
 
 export function MessDashboard() {
   const { data, approveApplication, rejectApplication, logWastage, updateStock } = useData();
+  const { currentUser } = useAuth();
   const [wasteModal, setWasteModal] = useState(false);
   const [wasteMeal, setWasteMeal] = useState('Dinner');
   const [wasteKg, setWasteKg] = useState('');
   const [wasteReason, setWasteReason] = useState('');
 
-  const business = data.businesses.biz_mess_01;
-  const pendingApps = data.applications.filter(a => a.businessId === 'biz_mess_01' && a.status === 'PENDING');
-  const lowStockItems = data.messInventory.filter(i => i.status === 'LOW_STOCK');
+  // Dynamic Mess business resolution
+  const currentBizId = currentUser?.businessId || Object.keys(data.businesses).find(k => data.businesses[k].type === 'MESS') || 'biz_mess_01';
+  const business = data.businesses[currentBizId] || {
+    id: currentBizId,
+    name: currentUser?.businessName || 'My Mess & Catering',
+    activeQrToken: 'tk_mess_default',
+    activeSubscribers: 0
+  };
 
-  const todayMenu = data.messMenu.Friday;
+  const pendingApps = data.applications.filter(a => a.businessId === currentBizId && a.status === 'PENDING');
+  const lowStockItems = data.messInventory.filter(i => (!i.businessId || i.businessId === currentBizId) && i.status === 'LOW_STOCK');
+  const plans = data.messMealPlans.filter(p => !p.businessId || p.businessId === currentBizId);
+  const customers = data.messCustomers.filter(c => !c.businessId || c.businessId === currentBizId);
+  const totalSubscribers = customers.length > 0 ? customers.length : (business.activeSubscribers || 0);
+
+  const todayMenu = data.messMenu.Friday || { breakfast: 'Poha & Tea', lunch: 'Rice, Dal, Sabzi', dinner: 'Roti, Paneer' };
 
   const handleWastageSubmit = (e) => {
     e.preventDefault();
@@ -73,10 +86,10 @@ export function MessDashboard() {
             Mess & Dining Operational Command
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Annapurna Gourmet Mess & Tiffin
+            {business.name}
           </h1>
           <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-            135 active dining subscribers. Manage meal plans, review new customer registrations, update daily menus, and audit food wastage.
+            {totalSubscribers} active dining subscribers across {plans.length} meal plans. Manage meal plans, review new customer registrations, update daily menus, and audit food wastage.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -94,14 +107,49 @@ export function MessDashboard() {
               variant="outline"
               size="sm"
               className="text-white border-slate-700 hover:bg-slate-800"
-              icon={Trash2}
+              icon={Plus}
               onClick={() => setWasteModal(true)}
             >
-              Log Today's Wastage
+              Log Food Wastage
             </Button>
           </div>
         </div>
       </div>
+
+      {/* QUICK START WIZARD FOR FRESH LIVE MESS */}
+      {plans.length === 0 && (
+        <Card className="border-2 border-dashed border-emerald-300 bg-emerald-50/60 p-6 rounded-2xl shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                Live Mess Mode Active
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Welcome to {business.name}! Let's set up your dining services.
+              </h3>
+              <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+                Your Mess has started with zero pre-saved data. Set up your plans, weekly menu, and dining counter QR code:
+              </p>
+              <div className="flex flex-wrap gap-2 text-xs pt-1">
+                <span className="px-3 py-1 rounded-lg bg-white border border-emerald-300 font-bold text-emerald-700 shadow-xs">
+                  Step 1: Create Meal Plans
+                </span>
+                <span className="px-3 py-1 rounded-lg bg-white/70 border border-slate-200 text-slate-600">
+                  Step 2: Set Weekly Menu
+                </span>
+                <span className="px-3 py-1 rounded-lg bg-white/70 border border-slate-200 text-slate-600">
+                  Step 3: Print Dining QR Standee
+                </span>
+              </div>
+            </div>
+            <Link to="/mess/plans">
+              <Button variant="mess" size="md" icon={Plus}>
+                Create First Meal Plan
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      )}
 
       {/* 4 Key Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

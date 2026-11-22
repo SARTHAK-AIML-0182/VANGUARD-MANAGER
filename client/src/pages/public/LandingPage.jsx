@@ -561,7 +561,17 @@ export function LandingPage() {
             </form>
           )}
 
-          <div className="pt-3 border-t border-slate-100">
+          <div className="pt-3 border-t border-slate-100 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActivePortalModal(null);
+                navigate('/pg');
+              }}
+              className="w-full py-2 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 transition-colors text-center"
+            >
+              Enter PG Management Console Directly →
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -689,7 +699,17 @@ export function LandingPage() {
             </form>
           )}
 
-          <div className="pt-3 border-t border-slate-100">
+          <div className="pt-3 border-t border-slate-100 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActivePortalModal(null);
+                navigate('/mess');
+              }}
+              className="w-full py-2 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 transition-colors text-center"
+            >
+              Enter Mess Management Console Directly →
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -754,8 +774,18 @@ export function LandingPage() {
           </div>
 
           {/* Option B: 1-Click Resident Access */}
-          <div className="space-y-2 pt-2">
-            <span className="font-bold text-slate-700 block">Existing Resident Sign In:</span>
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => {
+                setActivePortalModal(null);
+                navigate('/resident');
+              }}
+              className="w-full py-2 rounded-lg bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 transition-colors text-center"
+            >
+              Enter Resident Portal Directly →
+            </button>
+            <span className="font-bold text-slate-700 block text-[11px]">Or View Pre-seeded Resident Demo:</span>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"

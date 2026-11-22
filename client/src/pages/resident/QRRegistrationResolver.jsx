@@ -184,8 +184,32 @@ export function QRRegistrationResolver() {
             This business registration token is either invalid, revoked by the owner, or expired.
           </p>
           <div className="mt-4 p-3 rounded-lg bg-slate-100 text-slate-500 font-mono text-[11px] break-all">
-            Token: {token || 'None provided'}
+            Token: {token || 'No token specified in URL'}
           </div>
+
+          {/* Active Businesses Selector */}
+          {Object.keys(data.businesses).length > 0 && (
+            <div className="mt-5 text-left space-y-2">
+              <span className="text-xs font-bold text-slate-700 block">Choose an active business to register with:</span>
+              <div className="space-y-1.5">
+                {Object.values(data.businesses).map((biz) => (
+                  <button
+                    key={biz.id}
+                    type="button"
+                    onClick={() => navigate(`/register?token=${biz.activeQrToken}`)}
+                    className="w-full p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-left flex items-center justify-between text-xs font-semibold text-slate-900 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${biz.type === 'PG' ? 'bg-blue-600' : 'bg-emerald-600'}`}></span>
+                      <span>{biz.name}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono uppercase">{biz.type}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="mt-6 pt-4 border-t border-slate-100">
             <Link to="/">
               <Button variant="primary" size="md" className="w-full justify-center">

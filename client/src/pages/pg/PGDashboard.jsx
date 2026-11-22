@@ -25,7 +25,8 @@ import {
   AlertTriangle,
   Clock,
   Plus,
-  DollarSign
+  DollarSign,
+  Sparkles
 } from 'lucide-react';
 import Card, { CardHeader } from '../../components/common/Card';
 import Button from '../../components/common/Button';
@@ -33,6 +34,7 @@ import Badge from '../../components/common/Badge';
 import Modal from '../../components/common/Modal';
 import Input from '../../components/common/Input';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 
 const revenueData = [
   { month: 'Jun', amount: 280000, occupancy: 78 },
@@ -45,26 +47,39 @@ const revenueData = [
 
 export function PGDashboard() {
   const { data, approveApplication, rejectApplication, addProperty, generateMonthlyInvoices } = useData();
+  const { currentUser } = useAuth();
   const [addPropModal, setAddPropModal] = useState(false);
   const [newProp, setNewProp] = useState({ name: '', code: '', address: '', totalFloors: 3, manager: '' });
 
-  const totalBeds = 48;
-  const occupiedBeds = data.pgBeds.filter(b => b.status === 'OCCUPIED').length;
-  const vacantBeds = totalBeds - occupiedBeds;
-  const pendingApps = data.applications.filter(a => a.businessId === 'biz_pg_01' && a.status === 'PENDING');
-  const openComplaints = data.pgComplaints.filter(c => c.status !== 'RESOLVED');
+  // Dynamic business context
+  const currentBizId = currentUser?.businessId || Object.keys(data.businesses)[0] || 'biz_pg_01';
+  const business = data.businesses[currentBizId] || {
+    name: currentUser?.businessName || 'My PG & Hostel',
+    activeQrToken: 'tk_pg_rc_8923a4f89d021c7e'
+  };
+
+  const properties = data.pgProperties.filter(p => !p.businessId || p.businessId === currentBizId);
+  const rooms = data.pgRooms.filter(r => properties.some(p => p.id === r.propertyId));
+  const beds = data.pgBeds.filter(b => rooms.some(r => r.id === b.roomId));
+  const totalBeds = beds.length > 0 ? beds.length : (business.totalBeds || 0);
+  const occupiedBeds = beds.filter(b => b.status === 'OCCUPIED').length;
+  const vacantBeds = Math.max(0, totalBeds - occupiedBeds);
+  const pendingApps = data.applications.filter(a => a.businessId === currentBizId && a.status === 'PENDING');
+  const openComplaints = data.pgComplaints.filter(c => (!c.businessId || c.businessId === currentBizId) && c.status !== 'RESOLVED');
+  const residents = data.pgResidents.filter(r => !r.businessId || r.businessId === currentBizId);
 
   const handleCreateProperty = (e) => {
     e.preventDefault();
     if (!newProp.name || !newProp.code) return;
     addProperty({
       ...newProp,
-      totalRooms: 10,
-      totalBeds: 20
+      businessId: currentBizId,
+      totalRooms: 0,
+      totalBeds: 0
     });
     setNewProp({ name: '', code: '', address: '', totalFloors: 3, manager: '' });
     setAddPropModal(false);
-    alert('New property registered successfully!');
+    alert('Property created successfully! You can now configure rooms and beds.');
   };
 
   return (
@@ -77,10 +92,10 @@ export function PGDashboard() {
             PG Operational Command
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Royal Comfort PG & Hostels
+            {business.name}
           </h1>
           <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-            {totalBeds} total bed capacity across {data.pgProperties.length} verified properties. Review pending student registrations, monitor room occupancy, and inspect curfew attendance.
+            {totalBeds} total bed capacity across {properties.length} properties. Review pending student registrations, monitor room occupancy, and inspect curfew attendance.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -106,6 +121,40 @@ export function PGDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ONBOARDING QUICK-START WIZARD FOR LIVE MODE WITH 0 PROPERTIES */}
+      {properties.length === 0 && (
+        <Card className="border-2 border-dashed border-blue-300 bg-blue-50/60 p-6 rounded-2xl shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+                <Sparkles className="w-3.5 h-3.5" />
+                Live Business Mode Active
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">
+                Welcome to {business.name}! Let's set up your properties and rooms.
+              </h3>
+              <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
+                You have started with a fresh, clean slate. Follow these 3 simple steps to get your PG fully operational:
+              </p>
+              <div className="flex flex-wrap gap-2 text-xs pt-1">
+                <span className="px-3 py-1 rounded-lg bg-white border border-blue-300 font-bold text-blue-700 shadow-xs">
+                  Step 1: Add Property Building
+                </span>
+                <span className="px-3 py-1 rounded-lg bg-white/70 border border-slate-200 text-slate-600">
+                  Step 2: Add Rooms & Beds
+                </span>
+                <span className="px-3 py-1 rounded-lg bg-white/70 border border-slate-200 text-slate-600">
+                  Step 3: Print Student Registration QR Code
+                </span>
+              </div>
+            </div>
+            <Button variant="pg" size="md" icon={Plus} onClick={() => setAddPropModal(true)}>
+              Add First Property Now
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {/* 4 Key Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

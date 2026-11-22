@@ -15,13 +15,23 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Badge from '../../components/common/Badge';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext';
 
 export function MessQrCode() {
   const { data, regenerateQr } = useData();
+  const { currentUser } = useAuth();
   const [copied, setCopied] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
 
-  const business = data.businesses.biz_mess_01;
+  const currentBizId = currentUser?.businessId || Object.keys(data.businesses).find(k => data.businesses[k].type === 'MESS') || 'biz_mess_01';
+  const business = data.businesses[currentBizId] || {
+    id: currentBizId,
+    name: currentUser?.businessName || 'My Mess & Catering',
+    activeQrToken: 'tk_mess_default',
+    address: 'Campus Dining Plaza',
+    phone: '+91 98765 00000',
+    qrCreatedAt: new Date().toISOString()
+  };
   const registrationUrl = `${window.location.origin}/register?token=${business.activeQrToken}`;
 
   const handleCopy = () => {
@@ -34,7 +44,7 @@ export function MessQrCode() {
     if (window.confirm('Are you sure you want to revoke and regenerate this Mess QR Code? Any printed flyers will stop accepting new subscriber registrations.')) {
       setIsRotating(true);
       setTimeout(() => {
-        regenerateQr('biz_mess_01');
+        regenerateQr(business.id);
         setIsRotating(false);
       }, 400);
     }
