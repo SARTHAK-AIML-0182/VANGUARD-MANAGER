@@ -24,10 +24,24 @@ export function ResidentDashboard() {
   const { data } = useData();
 
   const isPg = currentUser?.role === 'PG_STUDENT';
-  const myResidentInfo = data.pgResidents.find(r => r.name === currentUser?.name) || data.pgResidents[0];
-  const myCustomerInfo = data.messCustomers.find(c => c.name === currentUser?.name) || data.messCustomers[0];
+  const defaultResident = {
+    name: currentUser?.name || 'Resident',
+    roomNumber: 'Pending Allocation',
+    bedNumber: 'Pending Allocation',
+    monthlyRent: 8500,
+    status: 'ACTIVE'
+  };
+  const myResidentInfo = data.pgResidents.find(r => r.name === currentUser?.name) || data.pgResidents[0] || defaultResident;
 
-  const myInvoices = data.pgInvoices.filter(i => i.residentName === myResidentInfo.name);
+  const defaultCustomer = {
+    name: currentUser?.name || 'Subscriber',
+    planName: 'Standard Dining Board',
+    status: 'ACTIVE',
+    mealsRemaining: 90
+  };
+  const myCustomerInfo = data.messCustomers.find(c => c.name === currentUser?.name) || data.messCustomers[0] || defaultCustomer;
+
+  const myInvoices = (data.pgInvoices || []).filter(i => i.residentName === myResidentInfo.name);
 
   return (
     <div className="space-y-6">

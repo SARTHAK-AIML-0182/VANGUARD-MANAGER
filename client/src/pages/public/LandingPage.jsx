@@ -203,17 +203,17 @@ export function LandingPage() {
             <Card
               borderAccent="pg"
               hoverEffect
-              className="flex flex-col justify-between border-slate-200/90 shadow-sm relative overflow-hidden"
+              className="flex flex-col justify-between border-slate-200/90 hover:border-blue-400/80 hover:shadow-2xl hover:shadow-blue-500/10 transition-all relative overflow-hidden bg-gradient-to-b from-blue-50/20 via-white to-white"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shadow-xs">
                     <Building2 className="w-6 h-6" />
                   </div>
                   <Badge variant="pg" size="md">PG Vertical</Badge>
                 </div>
 
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">PG Management Portal</h3>
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight">PG Management Portal</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-6">
                   For Paying Guest accommodations, student hostels, and co-living operators. Complete physical inventory, room allocations, and curfew attendance.
                 </p>
@@ -237,11 +237,11 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2 space-y-2">
+              <div className="pt-6 mt-2 space-y-2.5">
                 <Button
                   variant="pg"
                   size="md"
-                  className="w-full justify-between"
+                  className="w-full justify-between shadow-md hover:shadow-blue-500/20"
                   icon={ArrowRight}
                   iconPosition="right"
                   onClick={() => {
@@ -257,7 +257,7 @@ export function LandingPage() {
                     switchRole('PG_OWNER');
                     navigate('/pg');
                   }}
-                  className="w-full text-center text-xs font-semibold text-blue-600 hover:text-blue-800 py-1"
+                  className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-800 py-1 transition-colors"
                 >
                   ⚡ Or Open Demo as Rajesh Kumar (PG Owner)
                 </button>
@@ -268,17 +268,17 @@ export function LandingPage() {
             <Card
               borderAccent="mess"
               hoverEffect
-              className="flex flex-col justify-between border-slate-200/90 shadow-sm relative overflow-hidden"
+              className="flex flex-col justify-between border-slate-200/90 hover:border-emerald-400/80 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all relative overflow-hidden bg-gradient-to-b from-emerald-50/20 via-white to-white"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 shadow-xs">
                     <UtensilsCrossed className="w-6 h-6" />
                   </div>
                   <Badge variant="mess" size="md">Mess Vertical</Badge>
                 </div>
 
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Mess Management Portal</h3>
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight">Mess Management Portal</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-6">
                   For commercial dining messes, tiffin operators, and catering services. Structured subscription, meal punch attendance, and kitchen inventory.
                 </p>
@@ -302,11 +302,11 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2 space-y-2">
+              <div className="pt-6 mt-2 space-y-2.5">
                 <Button
                   variant="mess"
                   size="md"
-                  className="w-full justify-between"
+                  className="w-full justify-between shadow-md hover:shadow-emerald-500/20"
                   icon={ArrowRight}
                   iconPosition="right"
                   onClick={() => {
@@ -322,7 +322,7 @@ export function LandingPage() {
                     switchRole('MESS_OWNER');
                     navigate('/mess');
                   }}
-                  className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-800 py-1"
+                  className="w-full text-center text-xs font-bold text-emerald-600 hover:text-emerald-800 py-1 transition-colors"
                 >
                   ⚡ Or Open Demo as Suresh Patel (Mess Owner)
                 </button>
@@ -333,17 +333,17 @@ export function LandingPage() {
             <Card
               borderAccent="resident"
               hoverEffect
-              className="flex flex-col justify-between border-slate-200/90 shadow-sm relative overflow-hidden"
+              className="flex flex-col justify-between border-slate-200/90 hover:border-purple-400/80 hover:shadow-2xl hover:shadow-purple-500/10 transition-all relative overflow-hidden bg-gradient-to-b from-purple-50/20 via-white to-white"
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-600 shadow-xs">
                     <QrCode className="w-6 h-6" />
                   </div>
                   <Badge variant="resident" size="md">Resident Portal</Badge>
                 </div>
 
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">Student & Customer Portal</h3>
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight">Student & Customer Portal</h3>
                 <p className="text-sm text-slate-600 leading-relaxed mb-6">
                   For existing residents and dining subscribers. Frictionless QR-based registration, application tracking, and personal records.
                 </p>
@@ -367,11 +367,11 @@ export function LandingPage() {
                 </div>
               </div>
 
-              <div className="pt-6 mt-2 space-y-2">
+              <div className="pt-6 mt-2 space-y-2.5">
                 <Button
                   variant="resident"
                   size="md"
-                  className="w-full justify-between"
+                  className="w-full justify-between shadow-md hover:shadow-purple-500/20"
                   icon={ArrowRight}
                   iconPosition="right"
                   onClick={() => {
@@ -386,7 +386,7 @@ export function LandingPage() {
                     switchRole('RESIDENT_PG');
                     navigate('/resident');
                   }}
-                  className="w-full text-center text-xs font-semibold text-purple-600 hover:text-purple-800 py-1"
+                  className="w-full text-center text-xs font-bold text-purple-600 hover:text-purple-800 py-1 transition-colors"
                 >
                   ⚡ Or Open Demo as Aarav Sharma (Resident)
                 </button>
