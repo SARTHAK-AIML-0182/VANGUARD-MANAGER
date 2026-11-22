@@ -307,6 +307,46 @@ export const INITIAL_DATA = {
     { id: 'PCH-01', businessId: 'biz_mess_01', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'BREAKFAST', punchedAt: '08:15 AM' },
     { id: 'PCH-02', businessId: 'biz_mess_01', customerId: 'cust_02', customerName: 'Aditya Sen', mealType: 'BREAKFAST', punchedAt: '08:45 AM' },
     { id: 'PCH-03', businessId: 'biz_mess_01', customerId: 'cust_01', customerName: 'Priya Iyer', mealType: 'LUNCH', punchedAt: '01:10 PM' }
+  ],
+
+  // 14. PG STAFF
+  pgStaff: [
+    { id: 'stf_01', businessId: 'biz_pg_01', name: 'Ramesh Singh', role: 'Head Warden', phone: '+91 98111 55660', shift: 'Full Time', salary: 28000, status: 'ACTIVE' },
+    { id: 'stf_02', businessId: 'biz_pg_01', name: 'Sunita Sharma', role: 'Assistant Warden (Girls Wing)', phone: '+91 98111 77881', shift: 'Day Shift', salary: 22000, status: 'ACTIVE' },
+    { id: 'stf_03', businessId: 'biz_pg_01', name: 'Bahadur Thapa', role: 'Security Guard', phone: '+91 98222 11002', shift: 'Night Shift (8 PM - 8 AM)', salary: 16000, status: 'ACTIVE' },
+    { id: 'stf_04', businessId: 'biz_pg_01', name: 'Manoj Kumar', role: 'Facility Maintenance & Electrician', phone: '+91 98333 99881', shift: 'On Call', salary: 18000, status: 'ACTIVE' }
+  ],
+
+  // 15. PG EXPENSES
+  pgExpenses: [
+    { id: 'EXP-101', businessId: 'biz_pg_01', title: 'UPPCL Electricity Commercial Bill (Nov)', category: 'ELECTRICITY', amount: 38400, date: '2026-11-15', paidTo: 'UP Power Corp', status: 'PAID' },
+    { id: 'EXP-102', businessId: 'biz_pg_01', title: 'High-speed Fiber Internet (Airtel Enterprise)', category: 'WIFI', amount: 6500, date: '2026-11-10', paidTo: 'Airtel Broadband', status: 'PAID' },
+    { id: 'EXP-103', businessId: 'biz_pg_01', title: 'Water Tanker Supply (Municipal Shortage)', category: 'WATER', amount: 4800, date: '2026-11-18', paidTo: 'Ganga Water Suppliers', status: 'PAID' },
+    { id: 'EXP-104', businessId: 'biz_pg_01', title: 'Generator Diesel Backup (120 Liters)', category: 'MAINTENANCE', amount: 10800, date: '2026-11-12', paidTo: 'Indian Oil Bunk', status: 'PAID' },
+    { id: 'EXP-105', businessId: 'biz_pg_01', title: 'Housekeeping & Toilet Cleaning Consumables', category: 'SUPPLIES', amount: 7200, date: '2026-11-08', paidTo: 'Metro Wholesale Mart', status: 'PAID' }
+  ],
+
+  // 16. MESS STAFF
+  messStaff: [
+    { id: 'mstf_01', businessId: 'biz_mess_01', name: 'Naresh Prasad', role: 'Head Chef', phone: '+91 98777 22110', shift: 'Morning & Evening', salary: 32000, status: 'ACTIVE' },
+    { id: 'mstf_02', businessId: 'biz_mess_01', name: 'Dharmendra Yadav', role: 'Roti & Bread Specialist', phone: '+91 98777 33441', shift: 'Full Day', salary: 20000, status: 'ACTIVE' },
+    { id: 'mstf_03', businessId: 'biz_mess_01', name: 'Gopal Rawat', role: 'Kitchen Helper & Chopping', phone: '+91 98777 44552', shift: 'Day Shift', salary: 14000, status: 'ACTIVE' },
+    { id: 'mstf_04', businessId: 'biz_mess_01', name: 'Santosh Paswan', role: 'Dishwasher & Pantry Cleaner', phone: '+91 98777 55663', shift: 'Night Shift', salary: 13000, status: 'ACTIVE' }
+  ],
+
+  // 17. MESS EXPENSES
+  messExpenses: [
+    { id: 'MEXP-101', businessId: 'biz_mess_01', title: 'Monthly Wholesale Grain & Pulse Procurement', category: 'GROCERIES', amount: 48500, date: '2026-11-05', paidTo: 'Aggarwal Traders Mandi', status: 'PAID' },
+    { id: 'MEXP-102', businessId: 'biz_mess_01', title: 'Weekly Mandi Fresh Vegetables & Potatoes', category: 'VEGETABLES', amount: 18200, date: '2026-11-19', paidTo: 'Noida Sabzi Mandi', status: 'PAID' },
+    { id: 'MEXP-103', businessId: 'biz_mess_01', title: 'Commercial LPG Cylinder Refills (6 Cylinders)', category: 'GAS', amount: 11400, date: '2026-11-14', paidTo: 'Bharat Gas Agency', status: 'PAID' },
+    { id: 'MEXP-104', businessId: 'biz_mess_01', title: 'Daily Fresh Full Cream Milk & Curd Supply', category: 'DAIRY', amount: 16800, date: '2026-11-15', paidTo: 'Amul Dairy Distributor', status: 'PAID' }
+  ],
+
+  // 18. MESS FEEDBACK
+  messFeedback: [
+    { id: 'FDB-01', businessId: 'biz_mess_01', customerName: 'Priya Iyer', rating: 5, category: 'TASTE', meal: 'Dinner', comment: 'Paneer butter masala and kheer on Wednesday was exceptional!', date: '2026-11-20' },
+    { id: 'FDB-02', businessId: 'biz_mess_01', customerName: 'Aditya Sen', rating: 4, category: 'QUANTITY', meal: 'Lunch', comment: 'Rotis are very soft and hot. Suggest adding more green salad varieties.', date: '2026-11-19' },
+    { id: 'FDB-03', businessId: 'biz_mess_01', customerName: 'Megha Trivedi', rating: 5, category: 'HYGIENE', meal: 'Breakfast', comment: 'Dining hall is always neat and clean. Jain food is prepared with extreme care.', date: '2026-11-18' }
   ]
 };
 
@@ -320,6 +360,8 @@ export const CLEAN_LIVE_DATA = {
   pgInvoices: [],
   pgComplaints: [],
   pgLeaveRequests: [],
+  pgStaff: [],
+  pgExpenses: [],
   messMealPlans: [],
   messCustomers: [],
   messMenu: {
@@ -333,7 +375,10 @@ export const CLEAN_LIVE_DATA = {
   },
   messInventory: [],
   messWastage: [],
-  messAttendancePunches: []
+  messAttendancePunches: [],
+  messStaff: [],
+  messExpenses: [],
+  messFeedback: []
 };
 
 export function DataProvider({ children }) {
@@ -777,6 +822,54 @@ export function DataProvider({ children }) {
     setData(prev => ({ ...prev, messWastage: [entry, ...prev.messWastage] }));
   };
 
+  // Staff & Expenses Operations
+  const addPgStaff = (newStaff) => {
+    const staff = {
+      id: `stf_${Date.now()}`,
+      status: 'ACTIVE',
+      ...newStaff
+    };
+    setData(prev => ({ ...prev, pgStaff: [...(prev.pgStaff || []), staff] }));
+  };
+
+  const addPgExpense = (newExpense) => {
+    const expense = {
+      id: `EXP-${Date.now().toString().slice(-4)}`,
+      date: new Date().toISOString().split('T')[0],
+      status: 'PAID',
+      ...newExpense
+    };
+    setData(prev => ({ ...prev, pgExpenses: [expense, ...(prev.pgExpenses || [])] }));
+  };
+
+  const addMessStaff = (newStaff) => {
+    const staff = {
+      id: `mstf_${Date.now()}`,
+      status: 'ACTIVE',
+      ...newStaff
+    };
+    setData(prev => ({ ...prev, messStaff: [...(prev.messStaff || []), staff] }));
+  };
+
+  const addMessExpense = (newExpense) => {
+    const expense = {
+      id: `MEXP-${Date.now().toString().slice(-4)}`,
+      date: new Date().toISOString().split('T')[0],
+      status: 'PAID',
+      ...newExpense
+    };
+    setData(prev => ({ ...prev, messExpenses: [expense, ...(prev.messExpenses || [])] }));
+  };
+
+  const submitMessFeedback = (newFeedback) => {
+    const feedback = {
+      id: `FDB-${Date.now().toString().slice(-4)}`,
+      date: new Date().toISOString().split('T')[0],
+      ...newFeedback
+    };
+    setData(prev => ({ ...prev, messFeedback: [feedback, ...(prev.messFeedback || [])] }));
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -806,7 +899,12 @@ export function DataProvider({ children }) {
         punchMealAttendance,
         updateStock,
         addInventoryItem,
-        logWastage
+        logWastage,
+        addPgStaff,
+        addPgExpense,
+        addMessStaff,
+        addMessExpense,
+        submitMessFeedback
       }}
     >
       {children}

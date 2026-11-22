@@ -21,6 +21,9 @@ import PGInvoices from '../pages/pg/PGInvoices';
 import PGAttendance from '../pages/pg/PGAttendance';
 import PGComplaints from '../pages/pg/PGComplaints';
 import PGQrCode from '../pages/pg/PGQrCode';
+import PGStaff from '../pages/pg/PGStaff';
+import PGExpenses from '../pages/pg/PGExpenses';
+import PGReports from '../pages/pg/PGReports';
 import PGGenericModule from '../pages/pg/PGGenericModule';
 
 // Mess Pages
@@ -31,6 +34,10 @@ import MessMenu from '../pages/mess/MessMenu';
 import MessInventory from '../pages/mess/MessInventory';
 import MessWastage from '../pages/mess/MessWastage';
 import MessQrCode from '../pages/mess/MessQrCode';
+import MessStaff from '../pages/mess/MessStaff';
+import MessExpenses from '../pages/mess/MessExpenses';
+import MessReports from '../pages/mess/MessReports';
+import MessFeedback from '../pages/mess/MessFeedback';
 import MessGenericModule from '../pages/mess/MessGenericModule';
 
 // Resident Pages
@@ -79,10 +86,10 @@ export function AppRoutes() {
         <Route path="payments" element={<PGInvoices />} />
         <Route path="complaints" element={<PGComplaints />} />
         <Route path="maintenance" element={<PGComplaints />} />
-        <Route path="staff" element={<PGGenericModule title="Staff Management" subtitle="Manage wardens, cleaning, and security personnel" />} />
-        <Route path="expenses" element={<PGGenericModule title="Operational Expenses" subtitle="Track utility, electricity, and water bills" />} />
+        <Route path="staff" element={<PGStaff />} />
+        <Route path="expenses" element={<PGExpenses />} />
         <Route path="vendors" element={<PGGenericModule title="Vendors & Supplies" subtitle="Manage maintenance contractors and suppliers" />} />
-        <Route path="reports" element={<PGGenericModule title="Reports & Analytics" subtitle="Occupancy trends, revenue insights, and financial reports" />} />
+        <Route path="reports" element={<PGReports />} />
         <Route path="qr-code" element={<PGQrCode />} />
         <Route path="settings" element={<PGGenericModule title="PG Platform Settings" subtitle="Configure notification preferences and curfew rules" />} />
       </Route>
@@ -103,9 +110,10 @@ export function AppRoutes() {
         <Route path="vendors" element={<MessGenericModule title="Kitchen Vendors" subtitle="Dairy, grocery, and gas supplier contacts" />} />
         <Route path="kitchen" element={<MessGenericModule title="Kitchen Management" subtitle="Cook shifts, gas usage, and hygiene audits" />} />
         <Route path="wastage" element={<MessWastage />} />
-        <Route path="staff" element={<MessGenericModule title="Mess Staff & Chefs" subtitle="Head chefs, assistants, and cleaning staff" />} />
-        <Route path="expenses" element={<MessGenericModule title="Kitchen Expenses" subtitle="Gas, electricity, vegetable market procurement" />} />
-        <Route path="reports" element={<MessGenericModule title="Reports & Meal Analytics" subtitle="Daily plate count, wastage trends, and cost per meal" />} />
+        <Route path="staff" element={<MessStaff />} />
+        <Route path="expenses" element={<MessExpenses />} />
+        <Route path="reports" element={<MessReports />} />
+        <Route path="feedback" element={<MessFeedback />} />
         <Route path="qr-code" element={<MessQrCode />} />
         <Route path="settings" element={<MessGenericModule title="Mess Settings" subtitle="Meal window timings and subscription rules" />} />
       </Route>
